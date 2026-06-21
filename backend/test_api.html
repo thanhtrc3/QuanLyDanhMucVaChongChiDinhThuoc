@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Test API Nhanh (Có Token JWT)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f7f6; }
+        .container { display: flex; gap: 20px; }
+        .panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1; }
+        h3 { margin-top: 0; color: #333; margin-bottom: 5px;}
+        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; margin-top: 10px; margin-bottom: 15px; }
+        button:hover { background: #0056b3; }
+        input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        pre { background: #2d2d2d; color: #fff; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+        .badge { background: #ffc107; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>🚀 Tool Test API Nội Bộ - Nhóm 9</h2>
+    <p>Trang web này giúp test API trực tiếp. Đã tích hợp tự động lưu Token. Nhớ chạy <b>node server.js</b> ở thư mục backend trước khi test.</p>
+
+    <div class="container">
+        <!-- TEST API CONTROLS -->
+        <div class="panel">
+            <h3>1. Đăng nhập (POST) <span class="badge">Bảo mật</span></h3>
+            <input type="text" id="tenDangNhap" placeholder="Tên đăng nhập (VD: admin)">
+            <input type="password" id="matKhau" placeholder="Mật khẩu (VD: 123456)">
+            <button onclick="login()">Gọi API Đăng Nhập</button>
+            <hr>
+
+            <h3>2. Lấy danh sách Người dùng (GET)</h3>
+            <button onclick="testAPI('http://localhost:5000/api/nguoidung', 'GET')">Lấy DS Người Dùng</button>
+            <hr>
+
+            <h3>3. Thêm quy tắc Chống Chỉ Định (POST) <span class="badge">Bảo mật</span></h3>
+            <input type="text" id="thuocID" placeholder="ID Thuốc (VD: 1)">
+            <input type="text" id="loaiBenh" placeholder="Tên bệnh cấm dùng (VD: Đau dạ dày)">
+            <button onclick="postCCD()">Gọi API Thêm CCĐ</button>
+            <hr>
+
+            <h3>4. Thêm Thuốc mới (POST) <span class="badge">Bảo mật</span></h3>
+            <input type="text" id="maATC" placeholder="Mã ATC (VD: A01AB01)">
+            <input type="text" id="tenThuongMai" placeholder="Tên Thương Mại (VD: Panadol)">
+            <input type="text" id="hoatChat" placeholder="Hoạt chất (VD: Paracetamol)">
+            <button onclick="postThuoc()">Gọi API Thêm Thuốc</button>
+            <hr>
+
+            <h3>5. Xóa Thuốc (DELETE) <span class="badge">Chỉ Admin</span></h3>
+            <input type="text" id="deleteId" placeholder="Nhập ID thuốc cần xóa (VD: 1)">
+            <button style="background: #dc3545;" onclick="deleteThuoc()">Gọi API Xóa Thuốc</button>
+
+        </div>
+
+        <!-- KẾT QUẢ -->
+        <div class="panel">
+            <h3>Kết quả trả về từ Server:</h3>
+            <p id="status"></p>
+            <pre id="responseOutput">Chưa có dữ liệu...</pre>
+            <hr>
+            <h3>Token hiện tại:</h3>
+            <pre id="tokenOutput" style="background: #333; font-size: 11px;">Chưa đăng nhập</pre>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = ''; 
+
+        async function fetchAPI(url, options) {
+            const output = document.getElementById('responseOutput');
+            const status = document.getElementById('status');
+            output.innerText = "Đang tải dữ liệu...\n" + (options.body ? options.body : "");
+            status.innerText = "";
+
+            // Tự động gắn Token vào tất cả các Request
+            if (currentToken) {
+                options.headers = options.headers || {};
+                options.headers['Authorization'] = 'Bearer ' + currentToken;
+            }
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    status.innerHTML = `<span class="success">✅ Trạng thái HTTP: ${response.status}</span>`;
+                    // Nếu gọi API Login thành công, lưu lại Token hiển thị lên UI
+                    if (data.token) {
+                        currentToken = data.token;
+                        document.getElementById('tokenOutput').innerText = currentToken;
+                        alert('Đăng nhập thành công! Hệ thống đã lưu Token để dùng cho các API sau.');
+                    }
+                } else {
+                    status.innerHTML = `<span class="error">❌ Lỗi HTTP: ${response.status}</span>`;
+                }
+                output.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                status.innerHTML = `<span class="error">❌ Lỗi kết nối server (Quên chạy server à?)</span>`;
+                output.innerText = err.toString();
+            }
+        }
+
+        function testAPI(url, method) {
+            fetchAPI(url, { method: method });
+        }
+
+        function login() {
+            const payload = {
+                tenDangNhap: document.getElementById('tenDangNhap').value,
+                matKhau: document.getElementById('matKhau').value
+            };
+            fetchAPI('http://localhost:5000/api/nguoidung/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        function postThuoc() {
+            const payload = {
+                maATC: document.getElementById('maATC').value || 'A01',
+                tenThuongMai: document.getElementById('tenThuongMai').value || 'Thuốc Test',
+                hoatChat: document.getElementById('hoatChat').value || 'Hoạt chất Test',
+                donViTinh: 'Hộp',
+                hamLuong: '500mg',
+                tonKhoHienTai: 100,
+                ngayHetHan: '2028-01-01'
+            };
+            fetchAPI('http://localhost:5000/api/thuoc', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        function postCCD() {
+            const payload = {
+                thuocID: document.getElementById('thuocID').value || 1,
+                loaiBenh: document.getElementById('loaiBenh').value || 'Bệnh test',
+                mucDoCanhBao: 'Đỏ',
+                moTa: 'Bệnh nhân tuyệt đối không được dùng'
+            };
+            fetchAPI('http://localhost:5000/api/chongchidinh', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        function deleteThuoc() {
+            const id = document.getElementById('deleteId').value;
+            if(!id) return alert('Vui lòng nhập ID thuốc!');
+            fetchAPI(`http://localhost:5000/api/thuoc/${id}`, { method: 'DELETE' });
+        }
+    </script>
+</body>
+</html>

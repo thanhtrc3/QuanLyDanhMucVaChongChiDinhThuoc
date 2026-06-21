@@ -1,0 +1,49 @@
+BẢNG PHÂN CÔNG NHIỆM VỤ CHI TIẾT - NHÓM 9 (HAY DAY)
+DỰ ÁN: PHẦN MỀM DESKTOP QUẢN LÝ DANH MỤC THUỐC VÀ CHỐNG CHỈ ĐỊNH
+CÔNG NGHỆ SỬ DỤNG: Electron, ReactJS, Node.js (Express), MySQL
+
+--------------------------------------------------------------------------------
+1. NGUYỄN THANH HIẾN (2380600632) - Vai trò: PM & Backend Developer
+--------------------------------------------------------------------------------
+* Quản lý tiến độ (Agile/Scrum):
+  - Khởi tạo và quản lý các Epic, Story, Task, Subtask trên Jira.
+  - Theo dõi tiến độ Sprint hàng ngày, tổng hợp minh chứng công cụ cho báo cáo.
+* Cơ sở dữ liệu & API (Backend):
+  - Khởi tạo Database MySQL (Thiết lập các bảng NguoiDung, Thuoc, ChongChiDinh, v.v., kèm khóa ngoại và constraints).
+  - Thiết lập server Node.js + Express.
+  - Viết API RESTful cho module Quản trị hệ thống (FR01): Đăng nhập, phân quyền, cơ chế ghi log (Audit Log).
+  - Viết API cho module Danh mục thuốc (FR02): Lấy danh sách, thêm, sửa, xóa, tìm kiếm thuốc.
+
+--------------------------------------------------------------------------------
+2. NGUYỄN THÀNH ĐẠT (2380600450) - Vai trò: Frontend Developer & QA/Tester
+--------------------------------------------------------------------------------
+* Lập trình Giao diện (ReactJS):
+  - Dựng Layout hệ thống (Header, Sidebar menu, Navigation routing).
+  - Code giao diện phân hệ Quản lý danh mục thuốc (FR02): Form thêm mới/sửa thông tin (có validation bắt lỗi nhập liệu), danh sách phân trang.
+  - Ghép nối dữ liệu (fetch API) từ Backend vào màn hình Danh mục thuốc.
+* Quản lý chất lượng & Source Code (GitHub):
+  - Phụ trách duyệt (Review) các Pull Request trên GitHub, đảm bảo merge code không bị conflict.
+  - Viết các kịch bản kiểm thử (Test cases) và thực hiện test các luồng dữ liệu chính của hệ thống.
+
+--------------------------------------------------------------------------------
+3. TRẦN MỘNG BÌNH (2380600210) - Vai trò: Business Analyst & Frontend Developer
+--------------------------------------------------------------------------------
+* Phân tích nghiệp vụ & Tài liệu:
+  - Tinh chỉnh và chuẩn hóa các User Story, Acceptance Criteria.
+  - Chịu trách nhiệm thiết kế và vẽ các sơ đồ UML (Use Case, Class Diagram, ERD).
+* Lập trình Giao diện (ReactJS):
+  - Code màn hình Dashboard (FR05): Giao diện thống kê, vẽ biểu đồ số lượng thuốc, cảnh báo sắp hết hạn.
+  - Code màn hình Quản lý chống chỉ định (FR03): Giao diện để bác sĩ/dược sĩ nhập quy tắc chống chỉ định.
+  - Xây dựng component Cảnh báo (Modal/Popup) hiển thị mức độ nguy hiểm (Đỏ, Vàng) khi phát hiện thuốc kỵ nhau.
+
+--------------------------------------------------------------------------------
+4. NGUYỄN TRƯỜNG DUY (2380614664) - Vai trò: Software Architect & UI/UX Designer
+--------------------------------------------------------------------------------
+* Thiết kế trải nghiệm (UI/UX):
+  - Xây dựng bản thiết kế giao diện hoàn chỉnh trên Figma.
+  - Chuẩn hóa Design System (mã màu, typography, CSS tokens) cho toàn dự án.
+* Kiến trúc phần mềm & Tích hợp Desktop:
+  - Khởi tạo kiến trúc dự án (Vite + React).
+  - Tích hợp và cấu hình Electron.js để đóng gói mã nguồn Web thành ứng dụng Desktop (.exe) chạy độc lập trên Windows.
+  - Code thuật toán nghiệp vụ cốt lõi: Thuật toán quét chéo O(N^2) để phát hiện tương tác thuốc tức thời (FR04) trên giao diện kê đơn.
+  - Phụ trách khâu build và export sản phẩm cuối cùng.

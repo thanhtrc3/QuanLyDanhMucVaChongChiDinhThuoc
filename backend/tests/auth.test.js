@@ -66,6 +66,6 @@ describe('Auth API - Login (QCD-25)', () => {
       });
     
     expect(res.statusCode).toEqual(401);
-    expect(res.body).toHaveProperty('message', 'Sai m-t khcu!');
+    expect(res.body).toHaveProperty('message', 'Sai mật khẩu!');
   });
 });

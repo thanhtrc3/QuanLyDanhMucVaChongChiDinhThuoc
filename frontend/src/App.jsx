@@ -61,6 +61,7 @@ function App() {
                 </div>
               </div>
 
+              {/* Hiển thị Alert Dashboard (QCD-42) */}
               <h2 className="section-title">Cảnh báo an toàn gần đây</h2>
               <table className="data-table">
                 <thead>

@@ -31,12 +31,18 @@ function App() {
         >
           <span>🚫 Chống chỉ định</span>
         </div>
+        <div 
+          className={`nav-item ${activeTab === 'lichsu' ? 'active' : ''}`}
+          onClick={() => setActiveTab('lichsu')}
+        >
+          <span>📂 Lịch sử khám bệnh</span>
+        </div>
       </div>
 
       {/* Main Content */}
       <div className="main-content">
         <div className="header">
-          <h1>{activeTab === 'dashboard' ? 'Bảng điều khiển' : 'Danh mục thuốc'}</h1>
+          <h1>{activeTab === 'dashboard' ? 'Bảng điều khiển' : activeTab === 'thuoc' ? 'Danh mục thuốc' : 'Lịch sử khám bệnh'}</h1>
           <div className="user-profile">
             <span>Bác sĩ Hiến</span>
             <div className="avatar">H</div>
@@ -123,6 +129,40 @@ function App() {
                     <td>Lisinopril</td>
                     <td>224</td>
                     <td><span className="badge success">Còn hạn</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {activeTab === 'lichsu' && (
+            <>
+              {/* Lịch sử khám bệnh (QCD-47) */}
+              <h2 className="section-title">Lịch sử khám bệnh</h2>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Ngày khám</th>
+                    <th>Bệnh nhân</th>
+                    <th>Chẩn đoán</th>
+                    <th>Bác sĩ</th>
+                    <th>Chi tiết</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>20/05/2026</td>
+                    <td>Nguyễn Văn A</td>
+                    <td>Viêm họng cấp</td>
+                    <td>Bác sĩ Hiến</td>
+                    <td><span className="badge">Xem</span></td>
+                  </tr>
+                  <tr>
+                    <td>19/05/2026</td>
+                    <td>Trần Thị B</td>
+                    <td>Đau dạ dày</td>
+                    <td>Bác sĩ Hiến</td>
+                    <td><span className="badge">Xem</span></td>
                   </tr>
                 </tbody>
               </table>

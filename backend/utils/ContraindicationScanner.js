@@ -21,7 +21,7 @@ const evaluateRule = (benhNhan, chuoiDieuKien) => {
  * @param {Array} danhSachThuoc - Mảng các thuốc được kê [{ ten: string, ruleCCD: string }]
  * @returns {Array} - Danh sách các cảnh báo vi phạm
  */
-export const scanPatientContraindications = (benhNhan, danhSachThuoc) => {
+const scanPatientContraindications = (benhNhan, danhSachThuoc) => {
     const danhSachCanhBao = [];
 
     danhSachThuoc.forEach((thuoc) => {
@@ -43,18 +43,4 @@ export const scanPatientContraindications = (benhNhan, danhSachThuoc) => {
     return danhSachCanhBao;
 };
 
-// --- Đoạn code Test nhanh hiệu năng ---
-const benhNhanDemo = {
-    tuoi: 8,
-    canNang: 25,
-    tienSuBenh: ['Suy gan', 'Dị ứng Aspirin']
-};
-
-const donThuocDemo = [
-    { ten: 'Vitamin C', ruleCCD: '' },
-    { ten: 'Thuốc hạ sốt trẻ em A', ruleCCD: 'tuoi < 2' }, // An toàn vì em bé 8 tuổi
-    { ten: 'Thuốc kháng viêm B', ruleCCD: "tuoi < 12 || tienSuBenh.includes('Suy gan')" } // Vi phạm cả tuổi lẫn gan!
-];
-
-console.log("=== KẾT QUẢ QUÉT BỆNH LÝ ===");
-console.log(scanPatientContraindications(benhNhanDemo, donThuocDemo));
+module.exports = { scanPatientContraindications };

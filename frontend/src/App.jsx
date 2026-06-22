@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import PrescriptionWorkspace from './components/PrescriptionWorkspace.jsx';
 import ContraindicationRules from './components/ContraindicationRules.jsx';
+import Login from './components/Login.jsx';
+import AuditLogUI from './components/AuditLogUI.jsx';
+import { AlertTriangle, AlertCircle, LogOut } from 'lucide-react';
 
 const categoryOptions = ['Kháng sinh', 'Giảm đau - hạ sốt', 'Tim mạch', 'Tiêu hóa', 'Hô hấp', 'Dị ứng', 'Vitamin - khoáng chất', 'Khác'];
 const unitOptions = ['viên', 'vỉ', 'hộp', 'chai', 'ống', 'gói', 'tuýp', 'lọ'];
@@ -84,6 +87,10 @@ function stockStatus(medicine) {
 }
 
 function App() {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [activeView, setActiveView] = useState('catalog');
   const [medicines, setMedicines] = useState(sampleMedicines);
   const [groups, setGroups] = useState(sampleGroups);
@@ -218,15 +225,57 @@ function App() {
   }
 
   async function deleteMedicine(thuocID) {
+    if (!window.confirm('Bạn có chắc muốn xoá thuốc này?')) return;
     try {
-      const response = await fetch(`/api/thuoc/${thuocID}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Delete failed');
+      const response = await fetch(`/api/thuoc/${thuocID}`, { 
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${user?.token || localStorage.getItem('token')}` }
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message || 'Lỗi khi xóa thuốc');
+        return;
+      }
       setNotice('Đã xóa thuốc.');
+      setMedicines((current) => current.filter((item) => item.thuocID !== thuocID));
     } catch (_error) {
-      setNotice('Đã xóa khỏi giao diện demo, backend chưa phản hồi.');
+      alert('Lỗi kết nối hoặc server không phản hồi.');
     }
+  }
 
-    setMedicines((current) => current.filter((item) => item.thuocID !== thuocID));
+  async function applyConversion() {
+    if (!form.thuocID) {
+      alert('Vui lòng click nút "Sửa" một thuốc bất kỳ bên phải để áp dụng quy đổi!');
+      return;
+    }
+    const ratio = Math.round(conversionResult / (converter.quantity || 1)) || 1;
+
+    if (!window.confirm(`Xác nhận quy đổi thuốc [${form.tenThuongMai}] sang đơn vị [${converter.toUnit}] với tỷ lệ 1 ${converter.fromUnit} = ${ratio} ${converter.toUnit}?`)) return;
+
+    try {
+      const res = await fetch(`/api/thuoc/${form.thuocID}/convert`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token || localStorage.getItem('token')}` 
+        },
+        body: JSON.stringify({
+          fromUnit: converter.fromUnit,
+          toUnit: converter.toUnit,
+          ratio: ratio
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || 'Quy đổi thất bại');
+        return;
+      }
+      alert('Quy đổi đơn vị thành công!');
+      setMedicines(current => current.map(item => item.thuocID === form.thuocID ? data.data : item));
+      setForm(data.data);
+    } catch (err) {
+      alert('Lỗi khi quy đổi đơn vị');
+    }
   }
 
   async function createGroup(event) {
@@ -269,12 +318,57 @@ function App() {
   const lowStockCount = medicines.filter((item) => Number(item.tonKhoHienTai) <= Number(item.tonToiThieu)).length;
   const categoryCount = new Set(medicines.map((item) => item.phanLoai || 'Khác')).size;
 
+  const expiredList = medicines.filter(m => m.ngayHetHan && new Date(m.ngayHetHan) < new Date());
+  const lowStockList = medicines.filter(m => Number(m.tonKhoHienTai) <= Number(m.tonToiThieu));
+
+  if (!user) {
+    return (
+      <Login 
+        onLogin={(data) => {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          setUser(data.user);
+        }} 
+      />
+    );
+  }
+
   if (activeView === 'prescription') {
     return <PrescriptionWorkspace medicines={medicines} onNavigate={setActiveView} />;
   }
 
   if (activeView === 'rules') {
     return <ContraindicationRules medicines={medicines} onNavigate={setActiveView} />;
+  }
+
+  if (activeView === 'audit' && user?.vaiTro === 'Quản trị viên') {
+    return (
+      <main className="app-shell">
+        <aside className="sidebar">
+          <div className="brand-mark">Rx</div>
+          <h1>QLDM CCDT</h1>
+          <nav aria-label="Điều hướng chính">
+            <button className="nav-button" type="button" onClick={() => setActiveView('catalog')}>Danh mục thuốc</button>
+            <button className="nav-button" type="button" onClick={() => setActiveView('prescription')}>Đơn thuốc</button>
+            <button className="nav-button" type="button" onClick={() => setActiveView('rules')}>Chống chỉ định</button>
+            <button className="nav-button" type="button">Nhóm thuốc</button>
+            <button className="nav-button" type="button">Kho thuốc</button>
+            <button className="nav-button active" type="button">Nhật ký hệ thống</button>
+          </nav>
+          <button 
+            className="nav-button mt-auto" 
+            type="button" 
+            onClick={() => { localStorage.clear(); setUser(null); }}
+            style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <LogOut size={16} /> Đăng xuất
+          </button>
+        </aside>
+        <section className="workspace p-0" style={{ padding: 0 }}>
+          <AuditLogUI />
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -288,7 +382,18 @@ function App() {
           <button className="nav-button" type="button" onClick={() => setActiveView('rules')}>Chống chỉ định</button>
           <button className="nav-button" type="button">Nhóm thuốc</button>
           <button className="nav-button" type="button">Kho thuốc</button>
+          {user?.vaiTro === 'Quản trị viên' && (
+            <button className="nav-button" type="button" onClick={() => setActiveView('audit')}>Nhật ký hệ thống</button>
+          )}
         </nav>
+        <button 
+          className="nav-button mt-auto" 
+          type="button" 
+          onClick={() => { localStorage.clear(); setUser(null); }}
+          style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <LogOut size={16} /> Đăng xuất
+        </button>
       </aside>
 
       <section className="workspace">
@@ -306,6 +411,16 @@ function App() {
           <article><span>Cần nhập thêm</span><strong>{lowStockCount}</strong></article>
           <article><span>Phân loại</span><strong>{categoryCount}</strong></article>
         </section>
+
+        {(expiredList.length > 0 || lowStockList.length > 0) && (
+          <div className="alert-dashboard">
+            <h3><AlertTriangle size={20} /> Cảnh báo Kho thuốc</h3>
+            <ul>
+              {expiredList.map(m => <li key={`exp-${m.thuocID}`}>Thuốc <strong>{m.tenThuongMai}</strong> ({m.maATC}) đã hết hạn từ ngày {formatDate(m.ngayHetHan)}!</li>)}
+              {lowStockList.map(m => <li key={`low-${m.thuocID}`}>Thuốc <strong>{m.tenThuongMai}</strong> ({m.maATC}) sắp hết (Tồn kho: {m.tonKhoHienTai} {m.donViTinh}).</li>)}
+            </ul>
+          </div>
+        )}
 
         <section className="content-grid">
           <div className="left-column">
@@ -420,6 +535,14 @@ function App() {
               <div className="conversion-result">
                 {converter.quantity || 0} {converter.fromUnit} = <strong>{conversionResult}</strong>
               </div>
+              <button 
+                className="secondary-button" 
+                type="button" 
+                style={{ width: '100%', marginTop: '10px' }}
+                onClick={applyConversion}
+              >
+                Áp dụng quy đổi cho Thuốc đang sửa
+              </button>
             </section>
           </div>
 
@@ -446,18 +569,19 @@ function App() {
                 <tbody>
                   {filteredMedicines.map((medicine) => {
                     const status = stockStatus(medicine);
+                    const isExpired = medicine.ngayHetHan && new Date(medicine.ngayHetHan) < new Date();
                     return (
-                      <tr key={medicine.thuocID}>
+                      <tr key={medicine.thuocID} className={isExpired ? 'expired-row' : ''}>
                         <td>{medicine.maATC}</td>
                         <td><strong>{medicine.tenThuongMai}</strong><small>{medicine.hoatChat} · {medicine.hamLuong || 'Chưa nhập hàm lượng'}</small></td>
                         <td>{groupNameById[medicine.nhomThuocID] || 'Chưa gán'}</td>
                         <td>{medicine.phanLoai || 'Khác'}</td>
                         <td>{medicine.tonKhoHienTai} {medicine.donViTinh}</td>
                         <td>{formatDate(medicine.ngayHetHan)}</td>
-                        <td><span className={`badge ${status.tone}`}>{status.label}</span></td>
+                        <td><span className={`badge ${status.tone}`}>{isExpired ? 'Hết hạn' : status.label}</span></td>
                         <td>
                           <div className="row-actions">
-                            <button type="button" onClick={() => editMedicine(medicine)}>Sửa</button>
+                            <button type="button" disabled={isExpired} onClick={() => editMedicine(medicine)}>Sửa</button>
                             <button className="danger-link" type="button" onClick={() => deleteMedicine(medicine.thuocID)}>Xóa</button>
                           </div>
                         </td>

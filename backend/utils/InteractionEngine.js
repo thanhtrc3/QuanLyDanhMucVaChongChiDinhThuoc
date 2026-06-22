@@ -11,7 +11,7 @@ const checkConflict = (thuocA, thuocB) => {
 };
 
 // Core thuật toán quét n(n-1)/2
-export const scanDrugInteractions = (danhSachThuoc) => {
+const scanDrugInteractions = (danhSachThuoc) => {
     const canhBao = [];
     const n = danhSachThuoc.length;
 
@@ -36,12 +36,4 @@ export const scanDrugInteractions = (danhSachThuoc) => {
     return canhBao;
 };
 
-// Chạy test thử nghiệm luôn cho nóng
-const donThuocBenhNhan = [
-    { id: 1, ten: 'Amoxicillin' },
-    { id: 2, ten: 'Paracetamol' },
-    { id: 3, ten: 'Vitamin C' },
-    { id: 4, ten: 'Ibuprofen' }
-];
-
-console.log("Kết quả quét:", scanDrugInteractions(donThuocBenhNhan));
+module.exports = { scanDrugInteractions };

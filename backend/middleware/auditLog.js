@@ -1,10 +1,3 @@
-function auditLog(req, _res, next) {
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-    console.log(`[AUDIT] ${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
-  }
-
-  next();
-}
 const { poolPromise, sql } = require('../db');
 
 const auditLog = async (req, res, next) => {
@@ -19,8 +12,7 @@ const auditLog = async (req, res, next) => {
         if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
             try {
                 // Nếu gọi API Login thì chưa có req.user, lúc này gán user = data.user.userId
-                let userId = req.user ? req.user.userId : null;
-                if (!userId && data.user && data.user.userId) userId = data.user.userId;
+                let userId = req.user?.userId || data?.user?.userId || null;
 
                 const hanhDong = `${req.method} ${req.originalUrl}`;
                 const chiTiet = JSON.stringify(req.body || {});

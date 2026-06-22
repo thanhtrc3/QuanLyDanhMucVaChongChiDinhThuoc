@@ -74,6 +74,21 @@ async function createPrescription(data) {
 
     const header = headerResult.recordset[0];
     for (const item of data.chiTiet) {
+      // BƯỚC 1: Kiểm tra tồn kho (Bug 1)
+      const stockCheck = await new sql.Request(transaction)
+        .input('thuocID', sql.Int, item.thuocID)
+        .query('SELECT tenThuongMai, tonKhoHienTai FROM Thuoc WHERE thuocID = @thuocID');
+      
+      const thuocInfo = stockCheck.recordset[0];
+      if (!thuocInfo) {
+        throw new Error(`Thuốc ID ${item.thuocID} không tồn tại.`);
+      }
+      
+      if (thuocInfo.tonKhoHienTai < item.soLuong) {
+        throw new Error(`Thuốc ${thuocInfo.tenThuongMai} không đủ tồn kho (Chỉ còn ${thuocInfo.tonKhoHienTai}, yêu cầu ${item.soLuong}).`);
+      }
+
+      // BƯỚC 2: Thêm chi tiết đơn thuốc
       await new sql.Request(transaction)
         .input('donThuocID', sql.Int, header.donThuocID)
         .input('thuocID', sql.Int, item.thuocID)
@@ -90,6 +105,16 @@ async function createPrescription(data) {
           VALUES (
             @donThuocID, @thuocID, @lieuMoiLan, @soLanNgay, @soNgay, @soLuong, @huongDan, @maxLieuNgay
           )
+        `);
+
+      // BƯỚC 3: Trừ tồn kho thực tế (Bug 2)
+      await new sql.Request(transaction)
+        .input('thuocID', sql.Int, item.thuocID)
+        .input('soLuong', sql.Int, item.soLuong)
+        .query(`
+          UPDATE Thuoc 
+          SET tonKhoHienTai = tonKhoHienTai - @soLuong 
+          WHERE thuocID = @thuocID
         `);
     }
 

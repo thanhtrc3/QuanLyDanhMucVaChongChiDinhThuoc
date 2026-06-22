@@ -221,6 +221,9 @@ router.delete('/:id', verifyToken, checkRole(['Admin']), async (req, res) => {
 
     return res.json({ message: 'Da xoa thuoc thanh cong' });
   } catch (error) {
+    if (error.number === 547 || (error.originalError && error.originalError.info && error.originalError.info.number === 547)) {
+       return res.status(400).json({ message: 'Thuốc này đã được sử dụng trong Đơn thuốc, không thể xóa' });
+    }
     return handleRouteError(res, error, 'Khong the xoa thuoc dang co rang buoc du lieu');
   }
 const router = express.Router();
@@ -410,7 +413,40 @@ router.delete('/:id', verifyToken, checkRole(['Admin']), async (req, res) => {
         res.json({ message: 'Đã xóa thuốc thành công' });
     } catch (error) {
         console.error(error);
+        if (error.number === 547) {
+            return res.status(400).json({ message: 'Thuốc này đã được sử dụng trong Đơn thuốc, không thể xóa' });
+        }
         res.status(500).json({ message: 'Không thể xóa do thuốc đang bị ràng buộc (đã bán hoặc nằm trong chống chỉ định)' });
+    }
+});
+
+// API Đổi đơn vị tính (Fix Bug 5)
+router.post('/:id/convert', verifyToken, checkRole(['Admin', 'BacSi', 'DuocSi']), async (req, res) => {
+    const thuocID = req.params.id;
+    const { fromUnit, toUnit, ratio } = req.body;
+    
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input('thuocID', sql.Int, thuocID)
+            .input('donViTinh', sql.NVarChar(20), toUnit)
+            .input('ratio', sql.Int, ratio)
+            .query(`
+                UPDATE Thuoc 
+                SET donViTinh = @donViTinh, 
+                    tonKhoHienTai = tonKhoHienTai * @ratio,
+                    tonToiThieu = tonToiThieu * @ratio
+                OUTPUT INSERTED.*
+                WHERE thuocID = @thuocID
+            `);
+
+        if (result.rowsAffected[0] === 0) {
+            return res.status(400).json({ message: 'Không thể quy đổi đơn vị.' });
+        }
+        res.json({ message: 'Quy đổi đơn vị thành công', data: result.recordset[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi server khi quy đổi đơn vị' });
     }
 });
 

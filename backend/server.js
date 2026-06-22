@@ -1,11 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const auditLog = require('./middleware/auditLog');
-const thuocRoutes = require('./routes/thuoc');
-const nhomThuocRoutes = require('./routes/nhomThuoc');
-const donViRoutes = require('./routes/donVi');
-const donThuocRoutes = require('./routes/donThuoc');
 
 // Import Middleware
 const auditLog = require('./middleware/auditLog');
@@ -15,10 +10,12 @@ require('./jobs/checkExpired');
 
 // Import Routes
 const thuocRoutes = require('./routes/thuoc');
+const nhomThuocRoutes = require('./routes/nhomThuoc');
+const donViRoutes = require('./routes/donVi');
+const donThuocRoutes = require('./routes/donThuoc');
 const nguoiDungRoutes = require('./routes/nguoiDung');
 const chongChiDinhRoutes = require('./routes/chongChiDinh');
-
-require('./jobs/checkExpired');
+const auditLogRoutes = require('./routes/auditLog');
 
 dotenv.config();
 
@@ -36,6 +33,7 @@ app.use('/api/don-thuoc', donThuocRoutes);
 app.use('/api/nguoidung', nguoiDungRoutes);
 app.use('/api/chongchidinh', chongChiDinhRoutes);
 app.use('/api/chong-chi-dinh', chongChiDinhRoutes);
+app.use('/api/audit-log', auditLogRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({

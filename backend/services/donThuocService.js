@@ -1,9 +1,12 @@
 const donThuocRepository = require('../repositories/donThuocRepository');
 const { calculateDose } = require('../utils/dosageCalculator');
+const crypto = require('crypto');
+const { poolPromise, sql } = require('../db');
+const { scanDrugInteractions } = require('../utils/InteractionEngine');
 
 function createPrescriptionCode() {
   const date = new Date().toISOString().slice(0, 10).replaceAll('-', '');
-  const suffix = Math.random().toString(36).slice(2, 7).toUpperCase();
+  const suffix = crypto.randomBytes(3).toString('hex').toUpperCase();
   return `DT-${date}-${suffix}`;
 }
 
@@ -83,6 +86,26 @@ async function createPrescription(payload, user) {
   const chiTiet = Array.isArray(payload.chiTiet) ? payload.chiTiet.map(normalizeDetail) : [];
   const errors = [...validateHeader(header), ...validateDetails(chiTiet)];
   if (errors.length) throwValidationError(errors);
+
+  // Lấy tên thuốc từ DB để quét tương tác
+  const pool = await poolPromise;
+  const thuocIDs = chiTiet.map(item => item.thuocID);
+  
+  if (thuocIDs.length > 1) {
+    const thuocResult = await pool.request().query(`
+      SELECT thuocID, tenThuongMai as ten 
+      FROM Thuoc 
+      WHERE thuocID IN (${thuocIDs.join(',')})
+    `);
+    
+    // Quét tương tác thuốc
+    const canhBao = scanDrugInteractions(thuocResult.recordset);
+    if (canhBao && canhBao.length > 0) {
+      const errorMsgs = canhBao.map(cb => `Tương tác ${cb.capThuoc}: ${cb.chiTiet}`);
+      throwValidationError(errorMsgs);
+    }
+  }
+
   return donThuocRepository.createPrescription({ ...header, chiTiet });
 }
 

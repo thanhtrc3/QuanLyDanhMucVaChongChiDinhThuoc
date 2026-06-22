@@ -36,8 +36,28 @@ const mockLogs = [
 ];
 
 export default function AuditLogUI() {
-  const [logs, setLogs] = useState(mockLogs);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [logs, setLogs] = React.useState([]);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    async function fetchLogs() {
+      try {
+        const res = await fetch('/api/audit-log');
+        if (!res.ok) throw new Error('Không thể tải dữ liệu nhật ký');
+        const data = await res.json();
+        setLogs(data);
+      } catch (err) {
+        setError(err.message);
+        // Fallback to mock data on error (for demo purposes)
+        setLogs(mockLogs);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLogs();
+  }, []);
 
   const filteredLogs = logs.filter((log) =>
     log.hanhDong.toLowerCase().includes(searchTerm.toLowerCase()) ||

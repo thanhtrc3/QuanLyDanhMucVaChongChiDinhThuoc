@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Clock, History, FileText, User } from 'lucide-react';
+import { Search, Clock, History, FileText, User, Download } from 'lucide-react'; // Đã thêm icon Download
+import * as XLSX from 'xlsx'; // Import thư viện xuất Excel
 
 const mockLogs = [
   {
@@ -43,6 +44,19 @@ export default function AuditLogUI() {
     log.tenBang.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Hàm xử lý xuất file Excel
+  const handleExport = () => {
+    // 1. Tạo một worksheet từ dữ liệu đã lọc (filteredLogs)
+    const worksheet = XLSX.utils.json_to_sheet(filteredLogs);
+    
+    // 2. Tạo một workbook mới và gắn worksheet vào
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "NhatKyHeThong");
+    
+    // 3. Tải file xuống máy người dùng
+    XLSX.writeFile(workbook, "AuditLog_Export.xlsx");
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto bg-gray-50 min-h-screen">
       <div className="mb-8">
@@ -65,6 +79,15 @@ export default function AuditLogUI() {
             />
             <Search className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
           </div>
+          
+          {/* Nút Xuất Excel được thêm vào đây */}
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-sm"
+          >
+            <Download className="w-5 h-5" />
+            Xuất Excel
+          </button>
         </div>
 
         <div className="overflow-x-auto">

@@ -28,6 +28,7 @@ export interface Medicine {
   maATC: string;
   hoatChat: string;
   nhomThuoc: string;
+  doiTuong: 'Người lớn' | 'Trẻ em' | 'Phụ nữ có thai' | 'Tất cả'; 
   donVi: string;
   giaBan: number;
   tonKho: number;

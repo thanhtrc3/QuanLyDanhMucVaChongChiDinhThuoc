@@ -26,6 +26,12 @@ export const checkSafety = (details, patient, contraindications, interactions) =
   details.forEach(thuoc => {
     const ccdRules = contraindications.filter(rule => rule.thuocID === thuoc.thuocID);
     ccdRules.forEach(rule => {
+  // 1. KIỂM TRA CHỐNG CHỈ ĐỊNH (Kế thừa từ QCD-65)
+  // Quét từng thuốc xem có kỵ với bệnh nhân không
+  details.forEach(thuoc => {
+    const ccdRules = contraindications.filter(rule => rule.thuocID === thuoc.thuocID);
+    ccdRules.forEach(rule => {
+      // Ví dụ: Thuốc kỵ Phụ nữ có thai, và bệnh nhân đang có thai
       if (rule.loaiBenh === 'Phụ nữ có thai' && patient.coThai) {
         warnings.push({
           type: 'Chống chỉ định',
@@ -35,6 +41,7 @@ export const checkSafety = (details, patient, contraindications, interactions) =
           consequence: rule.moTa
         });
       }
+      // Ví dụ: Bệnh nhân có tiền sử dị ứng khớp với luật
       if (patient.diUng && patient.diUng.includes(rule.loaiBenh)) {
         warnings.push({
            type: 'Chống chỉ định',
@@ -62,6 +69,9 @@ export const checkSafety = (details, patient, contraindications, interactions) =
   });
 
   // Bước 2.2: Quét tổ hợp và tra cứu trên Map
+
+  // 2. KIỂM TRA TƯƠNG TÁC TỔ HỢP (Logic cốt lõi của QCD-67)
+  // Dùng 2 vòng lặp lồng nhau để bắt cặp tất cả các thuốc trong đơn
   for (let i = 0; i < details.length; i++) {
     for (let j = i + 1; j < details.length; j++) {
       const thuocA = details[i];
@@ -73,6 +83,15 @@ export const checkSafety = (details, patient, contraindications, interactions) =
       // Tra cứu trực tiếp trên Map (Không cần dùng .find() duyệt mảng nữa)
       if (interactionMap.has(lookupKey)) {
         const conflict = interactionMap.get(lookupKey);
+
+      // Tìm trong mảng luật tương tác (interactions) xem cặp A-B hoặc B-A có bị cấm không
+      const conflict = interactions.find(rule => 
+        (rule.thuocID_1 === thuocA.thuocID && rule.thuocID_2 === thuocB.thuocID) ||
+        (rule.thuocID_1 === thuocB.thuocID && rule.thuocID_2 === thuocA.thuocID)
+      );
+
+      // Nếu phát hiện có luật cấm cặp này, tóm cổ nó nhét vào mảng cảnh báo ngay
+      if (conflict) {
         warnings.push({
           type: 'Tương tác thuốc',
           mucDo: conflict.mucDoCanhBao || 'Nghiem trong',
@@ -85,6 +104,7 @@ export const checkSafety = (details, patient, contraindications, interactions) =
   }
 
   return warnings;
+  return warnings; // Trả về danh sách cảnh báo để giao diện render màu Đỏ/Vàng
 };
 
 export function PrescriptionManagement({ prescriptions, setPrescriptions, medicines, setMedicines, patients, contraindications, interactions, currentUser, addAuditLog }: Props) {
@@ -336,7 +356,7 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
                 </div>
               ))}
             </div>
-
+            {/* TODO (QCD-65): Tạm thời dùng Mock Data, cần tích hợp API GET /patients khi Backend hoàn thiện */}
             {/* Step 1: Patient + diagnosis */}
             {step === 1 && (
               <div className="space-y-4">

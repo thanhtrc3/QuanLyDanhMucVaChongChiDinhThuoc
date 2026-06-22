@@ -14,11 +14,17 @@ export function calculateLineDose(line) {
   const maxLieuNgay = positiveNumber(line.maxLieuNgay);
   const tongLieuNgay = round(lieuMoiLan * soLanNgay);
   const tongLieuDot = round(tongLieuNgay * soNgay);
+  const vuotLieu = maxLieuNgay > 0 && tongLieuNgay > maxLieuNgay;
+  const mucDoCanhBao = line.mucDoCanhBao || 'TUYET_DOI';
 
   return {
     tongLieuNgay,
     tongLieuDot,
     maxLieuNgay,
+    vuotLieu,
+    mucDoCanhBao: vuotLieu ? mucDoCanhBao : null,
+    isTuyetDoi: vuotLieu && mucDoCanhBao === 'TUYET_DOI',
+    isThanTrong: vuotLieu && mucDoCanhBao === 'THAN_TRONG'
     vuotLieu: maxLieuNgay > 0 && tongLieuNgay > maxLieuNgay
   };
 }

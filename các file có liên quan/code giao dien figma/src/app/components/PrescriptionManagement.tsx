@@ -22,6 +22,10 @@ const STATUS_COLORS: Record<string, string> = { 'Da cap': 'bg-green-100 text-gre
 export const checkSafety = (details, patient, contraindications, interactions) => {
   const warnings = [];
 
+  // 1. KIỂM TRA CHỐNG CHỈ ĐỊNH (Giữ nguyên logic cũ)
+  details.forEach(thuoc => {
+    const ccdRules = contraindications.filter(rule => rule.thuocID === thuoc.thuocID);
+    ccdRules.forEach(rule => {
   // 1. KIỂM TRA CHỐNG CHỈ ĐỊNH (Kế thừa từ QCD-65)
   // Quét từng thuốc xem có kỵ với bệnh nhân không
   details.forEach(thuoc => {
@@ -50,12 +54,35 @@ export const checkSafety = (details, patient, contraindications, interactions) =
     });
   });
 
+  // ==========================================
+  // 2. QCD-69: TỐI ƯU HÓA TRUY VẤN BẰNG HASH MAP
+  // ==========================================
+  
+  // Bước 2.1: Chuyển mảng tương tác thành Map để tra cứu siêu tốc O(1)
+  const interactionMap = new Map();
+  interactions.forEach(rule => {
+    // Tạo 2 chiều key để bọc lót (ví dụ: "1-2" và "2-1")
+    const key1 = `${rule.thuocID_1}-${rule.thuocID_2}`;
+    const key2 = `${rule.thuocID_2}-${rule.thuocID_1}`;
+    interactionMap.set(key1, rule);
+    interactionMap.set(key2, rule);
+  });
+
+  // Bước 2.2: Quét tổ hợp và tra cứu trên Map
+
   // 2. KIỂM TRA TƯƠNG TÁC TỔ HỢP (Logic cốt lõi của QCD-67)
   // Dùng 2 vòng lặp lồng nhau để bắt cặp tất cả các thuốc trong đơn
   for (let i = 0; i < details.length; i++) {
     for (let j = i + 1; j < details.length; j++) {
       const thuocA = details[i];
       const thuocB = details[j];
+      
+      // Tạo key tìm kiếm
+      const lookupKey = `${thuocA.thuocID}-${thuocB.thuocID}`;
+
+      // Tra cứu trực tiếp trên Map (Không cần dùng .find() duyệt mảng nữa)
+      if (interactionMap.has(lookupKey)) {
+        const conflict = interactionMap.get(lookupKey);
 
       // Tìm trong mảng luật tương tác (interactions) xem cặp A-B hoặc B-A có bị cấm không
       const conflict = interactions.find(rule => 
@@ -76,6 +103,7 @@ export const checkSafety = (details, patient, contraindications, interactions) =
     }
   }
 
+  return warnings;
   return warnings; // Trả về danh sách cảnh báo để giao diện render màu Đỏ/Vàng
 };
 

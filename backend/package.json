@@ -12,17 +12,6 @@
     "test": "node --check server.js && node --check routes/thuoc.js && node --check middleware/auth.js && node --check db.js"
     "test": "node --check server.js && node --check routes/thuoc.js && node --check routes/nhomThuoc.js && node --check routes/donVi.js && node --check services/thuocService.js && node --check services/nhomThuocService.js && node --check services/donViService.js && node --check repositories/thuocRepository.js && node --check repositories/nhomThuocRepository.js && node --check constants/medicineCatalog.js && node --check utils/atcValidator.js && node --check middleware/auth.js && node --check db.js"
   },
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -30,8 +19,6 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "msnodesqlv8": "^5.2.0",
-    "mssql": "^12.5.5",
-    "nodemon": "^3.1.14"
     "mssql": "^12.5.5",
     "mysql2": "^3.22.5",
     "node-cron": "^4.4.1",

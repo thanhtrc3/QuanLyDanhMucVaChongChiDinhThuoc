@@ -30,6 +30,34 @@ router.get('/meta/options', (_req, res) => {
   });
 });
 
+router.get('/search', async (req, res) => {
+  try {
+    const items = await thuocService.searchThuoc({
+      keyword: req.query.q || '',
+      limit: req.query.limit
+    });
+    return res.json(items);
+  } catch (error) {
+    return handleRouteError(res, error, 'Loi tim kiem thuoc');
+  }
+});
+
+router.get('/low-inventory', async (_req, res) => {
+  try {
+    const items = await thuocService.listThuoc({ keyword: '' });
+    const lowInventory = items.filter((item) => (
+      Number(item.tonKhoHienTai || 0) < Number(item.tonToiThieu || 0)
+    ));
+
+    return res.json({
+      count: lowInventory.length,
+      data: lowInventory
+    });
+  } catch (error) {
+    return handleRouteError(res, error, 'Loi tinh toan ton toi thieu');
+  }
+});
+
 router.get('/', async (req, res) => {
   const keyword = (req.query.q || '').trim();
 

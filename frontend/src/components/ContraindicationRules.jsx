@@ -1,3 +1,4 @@
+// File: frontend/src/components/ContraindicationRules.jsx
 import { ClipboardList, Pill, Plus, ShieldAlert, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -23,6 +24,9 @@ function buildExpression(conditions) {
 }
 
 export default function ContraindicationRules({ medicines, onNavigate }) {
+  // Lấy quyền user từ localStorage (hoặc Context tùy nhóm bạn)
+  const userRole = JSON.parse(localStorage.getItem('user'))?.role; 
+  
   const [form, setForm] = useState({
     tenQuyTac: '',
     thuocID: medicines[0]?.thuocID || '',
@@ -39,20 +43,14 @@ export default function ContraindicationRules({ medicines, onNavigate }) {
     medicines.reduce((map, medicine) => ({ ...map, [medicine.thuocID]: medicine }), {})
   ), [medicines]);
 
-  function updateForm(field, value) {
-    setForm((current) => ({ ...current, [field]: value }));
-  }
-
+  function updateForm(field, value) { setForm((current) => ({ ...current, [field]: value })); }
   function updateCondition(localID, field, value) {
     setConditions((current) => current.map((condition) => (
       condition.localID === localID ? { ...condition, [field]: value } : condition
     )));
   }
-
   function removeCondition(localID) {
-    setConditions((current) => current.length === 1
-      ? [newCondition()]
-      : current.filter((condition) => condition.localID !== localID));
+    setConditions((current) => current.length === 1 ? [newCondition()] : current.filter((condition) => condition.localID !== localID));
   }
 
   async function saveRule(event) {
@@ -62,18 +60,11 @@ export default function ContraindicationRules({ medicines, onNavigate }) {
       return;
     }
 
-    const payload = {
-      ...form,
-      thuocID: Number(form.thuocID),
-      bieuThuc: expression,
-      dieuKien: conditions.map(({ localID: _localID, ...condition }) => condition)
-    };
+    const payload = { ...form, thuocID: Number(form.thuocID), bieuThuc: expression, dieuKien: conditions.map(({ localID: _localID, ...condition }) => condition) };
 
     try {
       const response = await fetch('/api/chong-chi-dinh', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
       if (!response.ok) throw new Error('API unavailable');
       const saved = await response.json();
@@ -136,7 +127,13 @@ export default function ContraindicationRules({ medicines, onNavigate }) {
 
             <div className="expression-preview"><span>Biểu thức logic</span><code>{expression}</code></div>
             <label>Thông điệp cảnh báo<textarea value={form.thongDiep} onChange={(event) => updateForm('thongDiep', event.target.value)} placeholder="Thông điệp hiển thị cho người kê đơn" rows="3" /></label>
-            <button className="primary-button" type="submit">Lưu quy tắc</button>
+            
+            {/* Logic phân quyền nút Lưu */}
+            {userRole === 'ADMIN' ? (
+              <button className="primary-button" type="submit">Lưu quy tắc</button>
+            ) : (
+              <button className="primary-button opacity-50 cursor-not-allowed" disabled type="button">Bạn không có quyền chỉnh sửa</button>
+            )}
           </form>
 
           <section className="rules-panel">

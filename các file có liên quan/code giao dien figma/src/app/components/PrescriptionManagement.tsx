@@ -307,7 +307,7 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
                 </div>
               ))}
             </div>
-
+            {/* TODO (QCD-65): Tạm thời dùng Mock Data, cần tích hợp API GET /patients khi Backend hoàn thiện */}
             {/* Step 1: Patient + diagnosis */}
             {step === 1 && (
               <div className="space-y-4">

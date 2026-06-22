@@ -13,13 +13,14 @@ interface Props {
 
 const EMPTY_MED: Omit<Medicine, 'id'> = {
   tenThuong: '', maATC: '', hoatChat: '', nhomThuoc: 'Kháng sinh',
-  donVi: 'Viên', giaBan: 0, tonKho: 0, tonKhoToiThieu: 0,
+  donVi: 'Viên', doiTuong: 'Tất cả', // <--- Thêm đúng dòng này vào
+  giaBan: 0, tonKho: 0, tonKhoToiThieu: 0,
   hanDung: '', moTa: '', trangThai: true,
 };
 
 const NHOM_OPTIONS = ['Kháng sinh', 'Tim mạch', 'Đái tháo đường', 'Chống đông máu', 'Giảm đau - Hạ sốt', 'Giảm đau - Kháng viêm', 'Dạ dày', 'Dị ứng', 'Thần kinh - Tâm thần', 'Khác'];
 const DON_VI_OPTIONS = ['Viên', 'Lọ', 'Ống', 'Gói', 'Hộp', 'Chai'];
-
+const DOI_TUONG_OPTIONS = ['Người lớn', 'Trẻ em', 'Phụ nữ có thai', 'Tất cả'];
 export function MedicineCatalog({ medicines, setMedicines, currentUser, addAuditLog }: Props) {
   const [search, setSearch] = useState('');
   const [filterNhom, setFilterNhom] = useState('');
@@ -186,6 +187,16 @@ export function MedicineCatalog({ medicines, setMedicines, currentUser, addAudit
                 <label className="block text-xs font-medium text-gray-700 mb-1">Nhóm thuốc</label>
                 <select value={form.nhomThuoc} onChange={e => setForm({ ...form, nhomThuoc: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
                   {NHOM_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Đối tượng sử dụng *</label>
+                <select 
+                  value={form.doiTuong} 
+                  onChange={e => setForm({ ...form, doiTuong: e.target.value as any })} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  {DOI_TUONG_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
               <div>

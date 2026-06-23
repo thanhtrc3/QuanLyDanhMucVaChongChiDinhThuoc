@@ -2,7 +2,7 @@
 
 Dự án phát triển phần mềm quản lý kho thuốc, phòng khám tập trung vào nghiệp vụ quản lý danh mục thuốc, cảnh báo tự động chống chỉ định (CCĐ) và tương tác thuốc an toàn khi kê đơn.
 
-## 👥 Nhóm phát triển (Nhóm 9)
+##  Nhóm phát triển (Nhóm 9)
 - **Nguyễn Thanh Hiến** - Quản lý dự án (PM), Database & Backend
 - **Nguyễn Thành Đạt** - Frontend (React), Testing
 - **Nguyễn Trường Duy** - UI Design, Frontend
@@ -10,7 +10,7 @@ Dự án phát triển phần mềm quản lý kho thuốc, phòng khám tập t
 
 ---
 
-## 🚀 Công nghệ sử dụng (Tech Stack)
+##  Công nghệ sử dụng (Tech Stack)
 - **Frontend:** React.js, Vite (UI/UX Component based).
 - **Backend:** Node.js, Express.js (RESTful APIs).
 - **Database:** Microsoft SQL Server (Tích hợp Windows Authentication).
@@ -18,7 +18,7 @@ Dự án phát triển phần mềm quản lý kho thuốc, phòng khám tập t
 
 ---
 
-## ⚙️ Hướng dẫn Cài đặt & Triển khai (Dành cho Chấm điểm/Báo cáo)
+##  Hướng dẫn Cài đặt & Triển khai (Dành cho Chấm điểm/Báo cáo)
 
 ### Bước 0: Yêu cầu hệ thống (Prerequisites)
 - Máy tính đã cài đặt **Node.js** (Khuyến nghị phiên bản v16.x hoặc mới hơn).
@@ -77,7 +77,7 @@ npm run dev
 
 ---
 
-## 🔑 Tài khoản Đăng nhập Hệ thống (Dành cho Test)
+##  Tài khoản Đăng nhập Hệ thống (Dành cho Test)
 Để thuận tiện cho việc kiểm thử phần mềm, hệ thống đã tự động cấp sẵn các tài khoản mặc định sau:
 
 1. **Quản trị viên (Admin)**
@@ -94,7 +94,7 @@ npm run dev
 
 ---
 
-## 📦 Hướng dẫn đóng gói thành file cài đặt (.exe)
+##  Hướng dẫn đóng gói thành file cài đặt (.exe)
 Nếu bạn muốn đóng gói thành file cài đặt để gửi cho khách hàng hoặc chạy trên máy khác:
 1. Đảm bảo bạn đang ở thư mục `frontend`.
 2. Cài đặt công cụ đóng gói: `npm install electron-builder --save-dev`
@@ -103,7 +103,7 @@ Nếu bạn muốn đóng gói thành file cài đặt để gửi cho khách h�
 
 ---
 
-## 🧪 Hướng dẫn Chạy Kiểm thử (Testing)
+##  Hướng dẫn Chạy Kiểm thử (Testing)
 Dự án được thiết lập sẵn môi trường kiểm thử độc lập (Unit Test & Integration Test) và danh sách kịch bản kiểm thử (System Test & UAT) nhằm phục vụ công tác nghiệm thu và báo cáo đồ án.
 
 1. **Xem Kịch bản Kiểm thử (Manual Test)**: 
@@ -120,7 +120,7 @@ Dự án được thiết lập sẵn môi trường kiểm thử độc lập (
 
 ---
 
-## 📚 Tính năng cốt lõi (Key Features)
+##  Tính năng cốt lõi (Key Features)
 1. **Xác thực và Phân quyền:**
    - Hỗ trợ 3 vai trò: Quản trị viên (Admin), Dược sĩ, Bác sĩ.
    - Các chức năng nhạy cảm (như Nhật ký hệ thống, Xóa thuốc) được bảo mật nghiêm ngặt.

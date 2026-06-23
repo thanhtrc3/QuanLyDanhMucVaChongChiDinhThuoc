@@ -85,7 +85,18 @@ export default function App() {
 
   const today = new Date();
   const in30Days = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
-  const alertCount = medicines.filter(m => m.trangThai && (m.tonKho < m.tonKhoToiThieu || new Date(m.hanDung) < today || (new Date(m.hanDung) >= today && new Date(m.hanDung) <= in30Days))).length;
+
+  const alerts = medicines.filter(m => m.trangThai).flatMap(m => {
+    const items: { type: 'expired' | 'near-expiry' | 'low-stock'; name: string; detail: string }[] = [];
+    if (new Date(m.hanDung) < today)
+      items.push({ type: 'expired', name: m.tenThuong, detail: `Hết hạn ngày ${m.hanDung}` });
+    else if (new Date(m.hanDung) <= in30Days)
+      items.push({ type: 'near-expiry', name: m.tenThuong, detail: `Sắp hết hạn: ${m.hanDung}` });
+    if (m.tonKho < m.tonKhoToiThieu)
+      items.push({ type: 'low-stock', name: m.tenThuong, detail: `Tồn kho: ${m.tonKho} (tối thiểu ${m.tonKhoToiThieu})` });
+    return items;
+  });
+  const alertCount = alerts.length;
 
   if (!currentUser) {
     return (
@@ -141,6 +152,7 @@ export default function App() {
         setCurrentView={setCurrentView}
         onLogout={() => setCurrentUser(null)}
         alertCount={alertCount}
+        alerts={alerts}
       >
         {renderView()}
       </Layout>

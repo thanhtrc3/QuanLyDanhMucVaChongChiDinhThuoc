@@ -120,9 +120,9 @@ export function Dashboard({ currentUser, medicines, patients, prescriptions }: D
               <h3 className="text-gray-800 font-semibold">Đơn thuốc theo tháng</h3>
               <p className="text-xs text-gray-500">Năm {new Date().getFullYear()}</p>
             </div>
-            <div className="flex items-center gap-1 text-green-600 text-sm">
+            <div className="flex items-center gap-1 text-green-600 text-sm font-semibold">
               <TrendingUp className="w-4 h-4" />
-              <span>Thực tế</span>
+              <span>{stats.chartData.reduce((sum, d) => sum + (d.donThuoc || 0), 0)} đơn</span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={200}>
@@ -146,15 +146,15 @@ export function Dashboard({ currentUser, medicines, patients, prescriptions }: D
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h3 className="text-gray-800 font-semibold mb-1">Nhóm thuốc</h3>
           <p className="text-xs text-gray-500 mb-4">Phân loại theo danh mục</p>
-          <ResponsiveContainer width="100%" height={180}>
+          <ResponsiveContainer width="100%" height={230}>
             <PieChart>
-              <Pie data={nhomThuocStats} cx="50%" cy="50%" innerRadius={50} outerRadius={75} dataKey="value" paddingAngle={3}>
+              <Pie data={nhomThuocStats} cx="50%" cy="42%" innerRadius={50} outerRadius={75} dataKey="value" paddingAngle={3}>
                 {nhomThuocStats.map((_, idx) => (
                   <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 11 }} />
-              <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />
+              <Legend iconSize={8} wrapperStyle={{ fontSize: 10, lineHeight: '18px', paddingTop: 8 }} />
             </PieChart>
           </ResponsiveContainer>
         </div>

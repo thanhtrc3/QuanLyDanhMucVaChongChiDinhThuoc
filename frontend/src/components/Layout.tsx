@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useRef, useEffect } from 'react';
 import {
   LayoutDashboard, Users, FileText, Pill, ShieldAlert, Zap,
   Package, UserCog, ScrollText, Settings, LogOut, Bell, ChevronRight, Layers,
@@ -23,7 +23,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'inventory', label: 'Kho thuốc', icon: Package, roles: ['Admin', 'Duoc si'] },
   { id: 'users', label: 'Người dùng', icon: UserCog, roles: ['Admin'] },
   { id: 'audit-logs', label: 'Nhật ký hệ thống', icon: ScrollText, roles: ['Admin'] },
-  { id: 'settings', label: 'Cài đặt', icon: Settings, roles: ['Admin'] },
 ];
 
 const PAGE_TITLES: Record<View, string> = {
@@ -52,6 +51,8 @@ const ROLE_COLORS: Record<string, string> = {
   'Duoc si': 'bg-green-500',
 };
 
+type AlertItem = { type: 'expired' | 'near-expiry' | 'low-stock'; name: string; detail: string };
+
 interface LayoutProps {
   currentUser: User;
   currentView: View;
@@ -59,10 +60,21 @@ interface LayoutProps {
   onLogout: () => void;
   children: ReactNode;
   alertCount?: number;
+  alerts?: AlertItem[];
 }
 
-export function Layout({ currentUser, currentView, setCurrentView, onLogout, children, alertCount = 0 }: LayoutProps) {
+export function Layout({ currentUser, currentView, setCurrentView, onLogout, children, alertCount = 0, alerts = [] }: LayoutProps) {
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
   const allowedItems = NAV_ITEMS.filter(item => item.roles.includes(currentUser.vaiTro));
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -104,7 +116,6 @@ export function Layout({ currentUser, currentView, setCurrentView, onLogout, chi
           })}
         </nav>
 
-        {/* User Info */}
         <div className="p-3 border-t border-slate-700">
           <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-slate-700/50">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${ROLE_COLORS[currentUser.vaiTro] || 'bg-teal-500'}`}>
@@ -114,6 +125,9 @@ export function Layout({ currentUser, currentView, setCurrentView, onLogout, chi
               <div className="text-white text-xs font-medium truncate">{currentUser.hoTen}</div>
               <div className="text-slate-400 text-xs truncate">{ROLE_LABELS[currentUser.vaiTro]}</div>
             </div>
+            <button onClick={() => setCurrentView('settings')} className="text-slate-400 hover:text-teal-400 transition-colors flex-shrink-0" title="Cài đặt">
+              <Settings className="w-4 h-4" />
+            </button>
             <button onClick={onLogout} className="text-slate-400 hover:text-red-400 transition-colors flex-shrink-0" title="Đăng xuất">
               <LogOut className="w-4 h-4" />
             </button>
@@ -134,12 +148,56 @@ export function Layout({ currentUser, currentView, setCurrentView, onLogout, chi
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <Bell className="w-5 h-5" />
-              {alertCount > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center leading-none">{alertCount}</span>
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setNotifOpen(v => !v)}
+                className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Bell className="w-5 h-5" />
+                {alertCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center leading-none">{alertCount > 9 ? '9+' : alertCount}</span>
+                )}
+              </button>
+              {notifOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                    <span className="font-semibold text-gray-800 text-sm">Thông báo</span>
+                    <span className="text-xs text-gray-400">{alertCount} cảnh báo</span>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {alerts.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-gray-400 text-sm">Không có cảnh báo nào</div>
+                    ) : (
+                      alerts.map((a, i) => (
+                        <div key={i} className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors ${
+                          a.type === 'expired' ? 'border-l-2 border-l-red-400' : a.type === 'near-expiry' ? 'border-l-2 border-l-yellow-400' : 'border-l-2 border-l-orange-400'
+                        }`}>
+                          <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                            a.type === 'expired' ? 'bg-red-500' : a.type === 'near-expiry' ? 'bg-yellow-500' : 'bg-orange-500'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">{a.name}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{a.detail}</p>
+                            <p className={`text-xs font-medium mt-0.5 ${
+                              a.type === 'expired' ? 'text-red-600' : a.type === 'near-expiry' ? 'text-yellow-600' : 'text-orange-600'
+                            }`}>
+                              {a.type === 'expired' ? '✖ Hết hạn sử dụng' : a.type === 'near-expiry' ? '⚠ Sắp hết hạn' : '⚠ Tồn kho thấp'}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  {alerts.length > 0 && (
+                    <div className="px-4 py-2.5 border-t border-gray-100">
+                      <button onClick={() => { setCurrentView('inventory'); setNotifOpen(false); }} className="w-full text-center text-sm text-teal-600 hover:text-teal-700 font-medium">
+                        Xem trong Kho thuốc →
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
-            </button>
+            </div>
             <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${ROLE_COLORS[currentUser.vaiTro] || 'bg-teal-500'}`}>
                 {currentUser.hoTen.charAt(currentUser.hoTen.lastIndexOf(' ') + 1)}

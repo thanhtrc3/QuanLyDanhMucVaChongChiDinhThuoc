@@ -45,6 +45,7 @@ cd QuanLyDanhMucVaChongChiDinhThuoc
 Mở cửa sổ dòng lệnh (Terminal/CMD/PowerShell) tại thư mục dự án:
 ```bash
 cd backend
+cmd
 npm install
 npm start
 ```
@@ -55,6 +56,7 @@ npm start
 Mở thêm một cửa sổ dòng lệnh (Terminal/CMD) **mới** (vẫn giữ nguyên cửa sổ backend đang chạy ngầm):
 ```bash
 cd frontend
+cmd
 npm install
 ```
 

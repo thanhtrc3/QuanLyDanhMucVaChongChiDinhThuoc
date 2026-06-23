@@ -22,7 +22,7 @@ async function findById(donThuocID) {
   const headerResult = await pool.request()
     .input('donThuocID', sql.Int, donThuocID)
     .query(`
-      SELECT d.donThuocID as id, d.donThuocID as maDonThuoc, d.ngayLap as ngayKeDon, d.chanDoan, d.trangThai,
+      SELECT d.donThuocID as id, d.donThuocID as maDonThuoc, d.ngayLap as ngayKeDon, d.chanDoan, d.trangThai, d.ghiChu, d.lyDoGhiDe,
              b.hoTen as tenBenhNhan, n.hoTen as tenBacSi, d.benhNhanID, d.bacSiID
       FROM DonThuoc d
       LEFT JOIN BenhNhan b ON d.benhNhanID = b.benhNhanID
@@ -75,10 +75,12 @@ async function createPrescription(data) {
       .input('benhNhanID', sql.Int, data.benhNhanID)
       .input('chanDoan', sql.NVarChar(500), data.chanDoan || '')
       .input('trangThai', sql.NVarChar(50), data.trangThai || 'Đã cấp')
+      .input('ghiChu', sql.NVarChar(sql.MAX), data.ghiChu || '')
+      .input('lyDoGhiDe', sql.NVarChar(sql.MAX), data.lyDoGhiDe || '')
       .query(`
-        INSERT INTO DonThuoc (bacSiID, benhNhanID, chanDoan, trangThai, ngayLap)
+        INSERT INTO DonThuoc (bacSiID, benhNhanID, chanDoan, trangThai, ngayLap, ghiChu, lyDoGhiDe)
         OUTPUT INSERTED.*
-        VALUES (@bacSiID, @benhNhanID, @chanDoan, @trangThai, GETDATE())
+        VALUES (@bacSiID, @benhNhanID, @chanDoan, @trangThai, GETDATE(), @ghiChu, @lyDoGhiDe)
       `);
 
     const header = headerRes.recordset[0];
@@ -94,10 +96,11 @@ async function createPrescription(data) {
           .input('soLuong', sql.Int, item.soLuong)
           .input('lieuMoiLan', sql.Float, parseFloat(item.lieuMoiLan) || 1)
           .input('soLanDungNgay', sql.Int, parseInt(item.soLanDungNgay) || 1)
+          .input('ghiChu', sql.NVarChar(255), item.ghiChu || '')
           .query(`
-            INSERT INTO ChiTietDonThuoc (donThuocID, thuocID, soLuong, lieuMoiLan, soLanDungNgay)
+            INSERT INTO ChiTietDonThuoc (donThuocID, thuocID, soLuong, lieuMoiLan, soLanDungNgay, ghiChu)
             OUTPUT INSERTED.*
-            VALUES (@donThuocID, @thuocID, @soLuong, @lieuMoiLan, @soLanDungNgay)
+            VALUES (@donThuocID, @thuocID, @soLuong, @lieuMoiLan, @soLanDungNgay, @ghiChu)
           `);
           
         createdChiTiet.push(detRes.recordset[0]);

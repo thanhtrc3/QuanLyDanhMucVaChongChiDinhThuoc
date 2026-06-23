@@ -101,7 +101,11 @@ export function MedicineCatalog({ medicines, setMedicines, currentUser, addAudit
       
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.message || 'Lỗi khi lưu thuốc');
+        if (data.details && Array.isArray(data.details) && data.details.length > 0) {
+          data.details.forEach((err: string) => toast.error(err));
+        } else {
+          toast.error(data.message || 'Lỗi khi lưu thuốc');
+        }
         return;
       }
 

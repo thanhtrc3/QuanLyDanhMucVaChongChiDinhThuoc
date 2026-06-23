@@ -42,6 +42,8 @@ const poolPromise = new sql.ConnectionPool(config)
 
     try {
       const bcrypt = require('bcryptjs');
+
+      // Admin
       const checkAdmin = await pool.request().query("SELECT * FROM NguoiDung WHERE tenDangNhap = 'admin'");
       if (checkAdmin.recordset.length === 0) {
         const salt = await bcrypt.genSalt(10);
@@ -58,8 +60,44 @@ const poolPromise = new sql.ConnectionPool(config)
           `);
         console.log('Default admin account (admin/123456) created successfully.');
       }
+
+      // Bác sĩ
+      const checkBacSi = await pool.request().query("SELECT * FROM NguoiDung WHERE tenDangNhap = 'bacsi'");
+      if (checkBacSi.recordset.length === 0) {
+        const salt = await bcrypt.genSalt(10);
+        const matKhauHash = await bcrypt.hash('123456', salt);
+        await pool.request()
+          .input('tenDangNhap', sql.VarChar(50), 'bacsi')
+          .input('matKhauHash', sql.VarChar(255), matKhauHash)
+          .input('hoTen', sql.NVarChar(100), 'Bác sĩ mặc định')
+          .input('vaiTro', sql.NVarChar(50), 'Bác sĩ')
+          .input('trangThai', sql.Int, 1)
+          .query(`
+            INSERT INTO NguoiDung (tenDangNhap, matKhauHash, hoTen, vaiTro, trangThai)
+            VALUES (@tenDangNhap, @matKhauHash, @hoTen, @vaiTro, @trangThai)
+          `);
+        console.log('Default doctor account (bacsi/123456) created successfully.');
+      }
+
+      // Dược sĩ
+      const checkDuocSi = await pool.request().query("SELECT * FROM NguoiDung WHERE tenDangNhap = 'duocsi'");
+      if (checkDuocSi.recordset.length === 0) {
+        const salt = await bcrypt.genSalt(10);
+        const matKhauHash = await bcrypt.hash('123456', salt);
+        await pool.request()
+          .input('tenDangNhap', sql.VarChar(50), 'duocsi')
+          .input('matKhauHash', sql.VarChar(255), matKhauHash)
+          .input('hoTen', sql.NVarChar(100), 'Dược sĩ mặc định')
+          .input('vaiTro', sql.NVarChar(50), 'Dược sĩ')
+          .input('trangThai', sql.Int, 1)
+          .query(`
+            INSERT INTO NguoiDung (tenDangNhap, matKhauHash, hoTen, vaiTro, trangThai)
+            VALUES (@tenDangNhap, @matKhauHash, @hoTen, @vaiTro, @trangThai)
+          `);
+        console.log('Default pharmacist account (duocsi/123456) created successfully.');
+      }
     } catch (error) {
-      console.error('Could not ensure default admin account:', error);
+      console.error('Could not ensure default accounts:', error);
     }
 
     return pool;

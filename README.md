@@ -77,9 +77,19 @@ npm start
 ---
 
 ## 🔑 Tài khoản Đăng nhập Hệ thống (Dành cho Test)
-Để thuận tiện cho thầy/cô kiểm thử phần mềm, hệ thống đã tự động cấp sẵn một tài khoản có quyền Quản trị viên (Admin) đầy đủ chức năng:
-- **Tên đăng nhập (ID):** `admin`
-- **Mật khẩu (PW):** `123456`
+Để thuận tiện cho việc kiểm thử phần mềm, hệ thống đã tự động cấp sẵn các tài khoản mặc định sau:
+
+1. **Quản trị viên (Admin)**
+   - **Tên đăng nhập (ID):** `admin`
+   - **Mật khẩu (PW):** `123456`
+
+2. **Bác sĩ (Doctor)**
+   - **Tên đăng nhập (ID):** `bacsi`
+   - **Mật khẩu (PW):** `123456`
+
+3. **Dược sĩ (Pharmacist)**
+   - **Tên đăng nhập (ID):** `duocsi`
+   - **Mật khẩu (PW):** `123456`
 
 ---
 

@@ -18,49 +18,66 @@ Dự án phát triển phần mềm quản lý kho thuốc, phòng khám tập t
 
 ---
 
-## ⚙️ Hướng dẫn Cài đặt & Khởi chạy (Installation)
+## ⚙️ Hướng dẫn Cài đặt & Triển khai (Dành cho Chấm điểm/Báo cáo)
 
-### Bước 1: Chuẩn bị Cơ sở dữ liệu (Database)
-1. Mở Microsoft SQL Server Management Studio (SSMS).
-2. Tạo một Database mới với tên là `QuanLyThuoc_ChongChiDinh`.
-3. *(Lưu ý: Backend sử dụng Windows Authentication để kết nối tự động, không cần nhập sa/password).*
-4. Nếu máy bạn dùng tên DB khác, hãy tạo file `.env` trong thư mục `backend` và thêm dòng: `DB_NAME=Ten_Cua_Ban`.
+### Bước 0: Yêu cầu hệ thống (Prerequisites)
+- Máy tính đã cài đặt **Node.js** (Khuyến nghị phiên bản v16.x hoặc mới hơn).
+- Đã cài đặt **Microsoft SQL Server** và **SQL Server Management Studio (SSMS)**.
 
-### Bước 2: Clone dự án
+### Bước 1: Thiết lập Cơ sở dữ liệu (Database)
+1. Mở SQL Server Management Studio (SSMS).
+2. Tạo một Database mới (trống) với tên là `QuanLyThuoc_ChongChiDinh`.
+3. Hệ thống Backend được thiết lập dùng **Windows Authentication**, nên không cần cấu hình tài khoản `sa`.
+4. *Khắc phục sự cố:* Nếu cấu hình SQL Server trên máy thầy/cô khác biệt (hoặc khác tên host), vui lòng tạo file `.env` trong thư mục `backend` và thêm nội dung:
+   ```env
+   DB_HOST=localhost
+   DB_NAME=QuanLyThuoc_ChongChiDinh
+   ```
+
+### Bước 2: Tải mã nguồn
+Giải nén file mã nguồn dự án hoặc clone từ repository:
 ```bash
 git clone <link-github-của-bạn>
 cd QuanLyDanhMucVaChongChiDinhThuoc
 ```
 
-### Bước 3: Khởi chạy Server (Backend)
+### Bước 3: Cài đặt và Khởi chạy Backend (Máy chủ)
+Mở cửa sổ dòng lệnh (Terminal/CMD/PowerShell) tại thư mục dự án:
 ```bash
 cd backend
-cmd
 npm install
 npm start
-# Server sẽ chạy tại http://localhost:5000
 ```
+*=> Đợi vài giây, Backend sẽ báo kết nối Database thành công và chạy tại `http://localhost:5000`.* 
+*(Lưu ý: Ở lần chạy đầu tiên, code ở file `db.js` sẽ tự động tạo tài khoản Admin mặc định vào Database).*
 
-### Bước 4: Khởi chạy Giao diện (Frontend)
-Mở một terminal (cmd/powershell) mới, trỏ vào thư mục `frontend`:
-
+### Bước 4: Cài đặt và Khởi chạy Frontend (Giao diện)
+Mở thêm một cửa sổ dòng lệnh (Terminal/CMD) **mới** (vẫn giữ nguyên cửa sổ backend đang chạy ngầm):
 ```bash
 cd frontend
-cmd
 npm install
 ```
 
-**Lựa chọn 1: Chạy trên trình duyệt Web (Dev mode)**
+Sau khi cài đặt xong thư viện, có 2 lựa chọn để xem sản phẩm:
+
+**Lựa chọn 1: Chạy trên trình duyệt Web (Khuyên dùng)**
 ```bash
 npm run dev
-# Mở trình duyệt và truy cập http://localhost:5173
 ```
+*=> Mở trình duyệt web và truy cập `http://localhost:5173` để sử dụng hệ thống.*
 
-**Lựa chọn 2: Chạy thành phần mềm Desktop (Electron mode)**
+**Lựa chọn 2: Chạy thành phần mềm Desktop độc lập (Electron mode)**
 ```bash
 npm start
-# Cửa sổ phần mềm Desktop sẽ tự động hiển thị lên màn hình
 ```
+*=> Cửa sổ phần mềm Desktop sẽ tự động hiển thị lên màn hình.*
+
+---
+
+## 🔑 Tài khoản Đăng nhập Hệ thống (Dành cho Test)
+Để thuận tiện cho thầy/cô kiểm thử phần mềm, hệ thống đã tự động cấp sẵn một tài khoản có quyền Quản trị viên (Admin) đầy đủ chức năng:
+- **Tên đăng nhập (ID):** `admin`
+- **Mật khẩu (PW):** `123456`
 
 ---
 

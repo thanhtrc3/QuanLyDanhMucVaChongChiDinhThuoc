@@ -203,33 +203,7 @@ export function Login({ onLogin }: LoginProps) {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="login-divider">
-            <span />
-            <p>Đăng nhập nhanh (Demo)</p>
-            <span />
-          </div>
-
-          {/* Quick login buttons */}
-          <div className="login-quick-btns">
-            {[
-              { label: 'Admin', user: 'admin', emoji: '🛡️' },
-              { label: 'Bác sĩ', user: 'bacsi1', emoji: '👨‍⚕️' },
-              { label: 'Dược sĩ', user: 'duocsi1', emoji: '💊' },
-            ].map(({ label, user, emoji }) => (
-              <button
-                key={user}
-                type="button"
-                className="login-quick-btn"
-                onClick={() => quickLogin(user)}
-                disabled={loading}
-              >
-                <span style={{ fontSize: 20 }}>{emoji}</span>
-                <span className="role-name">{label}</span>
-                <span className="role-user">{user}</span>
-              </button>
-            ))}
-          </div>
+          
         </div>
 
         {/* Footer */}

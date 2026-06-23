@@ -35,6 +35,7 @@ cd QuanLyDanhMucVaChongChiDinhThuoc
 ### Bước 3: Khởi chạy Server (Backend)
 ```bash
 cd backend
+cmd
 npm install
 npm start
 # Server sẽ chạy tại http://localhost:5000
@@ -45,6 +46,7 @@ Mở một terminal (cmd/powershell) mới, trỏ vào thư mục `frontend`:
 
 ```bash
 cd frontend
+cmd
 npm install
 ```
 

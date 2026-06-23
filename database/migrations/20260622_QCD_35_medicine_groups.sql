@@ -1,0 +1,26 @@
+IF OBJECT_ID('NhomThuoc', 'U') IS NULL
+BEGIN
+  CREATE TABLE NhomThuoc (
+    nhomThuocID INT IDENTITY(1,1) PRIMARY KEY,
+    tenNhom NVARCHAR(120) NOT NULL UNIQUE,
+    moTa NVARCHAR(255) NULL,
+    trangThai BIT NOT NULL DEFAULT 1,
+    createdAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+  );
+END;
+
+IF COL_LENGTH('Thuoc', 'nhomThuocID') IS NULL
+BEGIN
+  ALTER TABLE Thuoc ADD nhomThuocID INT NULL;
+END;
+
+IF NOT EXISTS (
+  SELECT 1
+  FROM sys.foreign_keys
+  WHERE name = 'FK_Thuoc_NhomThuoc'
+)
+BEGIN
+  ALTER TABLE Thuoc
+  ADD CONSTRAINT FK_Thuoc_NhomThuoc
+  FOREIGN KEY (nhomThuocID) REFERENCES NhomThuoc(nhomThuocID);
+END;

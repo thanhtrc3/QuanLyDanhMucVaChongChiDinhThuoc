@@ -12,34 +12,26 @@ const auditLog = async (req, res, next) => {
         if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
             try {
                 // Nếu gọi API Login thì chưa có req.user, lúc này gán user = data.user.userId
-                let userId = req.user ? req.user.userId : null;
-                if (!userId && data.user && data.user.userId) userId = data.user.userId;
+                let userId = req.user?.userId || data?.user?.userId || null;
 
-                const hanhDong = `${req.method} ${req.originalUrl}`;
-                const chiTiet = JSON.stringify(req.body || {});
+                const hanhDong = req.method;
+                const tenBang = req.originalUrl.split('/')[2] || 'System'; // /api/thuoc => thuoc
+                const giaTriMoi = JSON.stringify(req.body || {});
                 const ketQua = res.statusCode >= 200 && res.statusCode < 300 ? 'Thành công' : 'Thất bại';
+                const actionDesc = `${hanhDong} [${ketQua}]`;
                 
                 const pool = await poolPromise;
                 await pool.request()
-                    .input('userId', sql.Int, userId || null)
-                    .input('hanhDong', sql.NVarChar(200), hanhDong)
-                    .input('chiTiet', sql.NVarChar(sql.MAX), chiTiet)
+                    .input('userID', sql.Int, userId)
+                    .input('tenBang', sql.VarChar(50), tenBang)
+                    .input('hanhDong', sql.NVarChar(50), actionDesc)
                     .input('thoiGian', sql.DateTime, new Date())
-                    .input('ketQua', sql.NVarChar(50), ketQua)
+                    .input('giaTriCu', sql.NVarChar(sql.MAX), null)
+                    .input('giaTriMoi', sql.NVarChar(sql.MAX), giaTriMoi)
+                    .input('lyDoOverride', sql.NVarChar(500), null)
                     .query(`
-                        -- Mẹo nhỏ: Tự tạo bảng AuditLog nếu chưa có trong Database
-                        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='AuditLog' and xtype='U')
-                        CREATE TABLE AuditLog (
-                            logId INT IDENTITY(1,1) PRIMARY KEY,
-                            userId INT NULL,
-                            hanhDong NVARCHAR(200),
-                            chiTiet NVARCHAR(MAX),
-                            thoiGian DATETIME,
-                            ketQua NVARCHAR(50)
-                        );
-                        
-                        INSERT INTO AuditLog (userId, hanhDong, chiTiet, thoiGian, ketQua)
-                        VALUES (@userId, @hanhDong, @chiTiet, @thoiGian, @ketQua)
+                        INSERT INTO AuditLog (userID, tenBang, hanhDong, thoiGian, giaTriCu, giaTriMoi, lyDoOverride)
+                        VALUES (@userID, @tenBang, @hanhDong, @thoiGian, @giaTriCu, @giaTriMoi, @lyDoOverride)
                     `);
             } catch (err) {
                 console.error('Lỗi khi ghi Audit Log:', err);

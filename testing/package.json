@@ -1,0 +1,19 @@
+{
+  "name": "qldm-ccdt-testing",
+  "version": "1.0.0",
+  "description": "Standalone testing environment for Quan Ly Danh Muc Va Chong Chi Dinh Thuoc",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:unit": "jest unit_tests",
+    "test:integration": "jest integration_tests"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}

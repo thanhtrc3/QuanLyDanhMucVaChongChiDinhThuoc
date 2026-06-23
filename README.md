@@ -25,6 +25,7 @@ Dự án phát triển phần mềm quản lý kho thuốc, phòng khám tập t
 - Đã cài đặt **Microsoft SQL Server** và **SQL Server Management Studio (SSMS)**.
 
 ### Bước 1: Thiết lập Cơ sở dữ liệu (Database)
+cách 1 :
 1. Mở SQL Server Management Studio (SSMS).
 2. Tạo một Database mới (trống) với tên là `QuanLyThuoc_ChongChiDinh`.
 3. Hệ thống Backend được thiết lập dùng **Windows Authentication**, nên không cần cấu hình tài khoản `sa`.
@@ -33,7 +34,7 @@ Dự án phát triển phần mềm quản lý kho thuốc, phòng khám tập t
    DB_HOST=localhost
    DB_NAME=QuanLyThuoc_ChongChiDinh
    ```
-
+cách 2: vào link này "QuanLyDanhMucVaChongChiDinhThuoc\database\scripts\QuanLyThuoc_ChongChiDinh.sql" để tải sql xuống
 ### Bước 2: Tải mã nguồn
 Giải nén file mã nguồn dự án hoặc clone từ repository:
 ```bash

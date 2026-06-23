@@ -40,6 +40,28 @@ const poolPromise = new sql.ConnectionPool(config)
       console.error('Could not ensure Thuoc.trangThai column:', error);
     }
 
+    try {
+      const bcrypt = require('bcryptjs');
+      const checkAdmin = await pool.request().query("SELECT * FROM NguoiDung WHERE tenDangNhap = 'admin'");
+      if (checkAdmin.recordset.length === 0) {
+        const salt = await bcrypt.genSalt(10);
+        const matKhauHash = await bcrypt.hash('123456', salt);
+        await pool.request()
+          .input('tenDangNhap', sql.VarChar(50), 'admin')
+          .input('matKhauHash', sql.VarChar(255), matKhauHash)
+          .input('hoTen', sql.NVarChar(100), 'Quản trị viên hệ thống')
+          .input('vaiTro', sql.NVarChar(50), 'Admin')
+          .input('trangThai', sql.Int, 1)
+          .query(`
+            INSERT INTO NguoiDung (tenDangNhap, matKhauHash, hoTen, vaiTro, trangThai)
+            VALUES (@tenDangNhap, @matKhauHash, @hoTen, @vaiTro, @trangThai)
+          `);
+        console.log('Default admin account (admin/123456) created successfully.');
+      }
+    } catch (error) {
+      console.error('Could not ensure default admin account:', error);
+    }
+
     return pool;
   })
   .catch((error) => {

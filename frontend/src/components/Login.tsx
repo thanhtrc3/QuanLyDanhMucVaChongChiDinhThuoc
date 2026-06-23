@@ -23,18 +23,29 @@ export function Login({ onLogin }: LoginProps) {
     e.preventDefault();
     setReqError(''); setReqSuccess('');
     setLoading(true);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     try {
       const res = await fetch('/api/account-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reqForm)
+        body: JSON.stringify(reqForm),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setReqSuccess(data.message || 'Gửi yêu cầu thành công!');
       setTimeout(() => setRequestModalOpen(false), 3000);
     } catch (err: any) {
-      setReqError(err.message || 'Lỗi kết nối.');
+      if (err.name === 'AbortError') {
+        setReqError('Máy chủ phản hồi quá lâu, vui lòng thử lại sau!');
+      } else {
+        setReqError(err.message || 'Lỗi kết nối.');
+      }
     } finally {
       setLoading(false);
     }
@@ -56,12 +67,19 @@ export function Login({ onLogin }: LoginProps) {
       return;
     }
     setLoading(true);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     try {
       const response = await fetch('/api/nguoidung/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tenDangNhap: username, matKhau: password })
+        body: JSON.stringify({ tenDangNhap: username, matKhau: password }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
@@ -74,7 +92,11 @@ export function Login({ onLogin }: LoginProps) {
       localStorage.setItem('token', data.token);
       onLogin(data.user);
     } catch (err: any) {
-      setError(err.message || 'Lỗi kết nối đến máy chủ.');
+      if (err.name === 'AbortError') {
+        setError('Máy chủ phản hồi quá lâu, vui lòng thử lại sau!');
+      } else {
+        setError(err.message || 'Lỗi kết nối đến máy chủ.');
+      }
     } finally {
       setLoading(false);
     }
@@ -83,18 +105,29 @@ export function Login({ onLogin }: LoginProps) {
   async function quickLogin(tenDangNhap: string) {
     setError('');
     setLoading(true);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     try {
       const res = await fetch('/api/nguoidung/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tenDangNhap, matKhau: 'password123' })
+        body: JSON.stringify({ tenDangNhap, matKhau: 'password123' }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Đăng nhập thất bại');
       localStorage.setItem('token', data.token);
       onLogin(data.user);
     } catch (err: any) {
-      setError(err.message);
+      if (err.name === 'AbortError') {
+        setError('Máy chủ phản hồi quá lâu, vui lòng thử lại sau!');
+      } else {
+        setError(err.message || 'Lỗi kết nối đến máy chủ.');
+      }
     } finally {
       setLoading(false);
     }

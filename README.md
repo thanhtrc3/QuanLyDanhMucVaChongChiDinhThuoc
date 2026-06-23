@@ -62,18 +62,18 @@ npm install
 ```
 
 Sau khi cài đặt xong thư viện, có 2 lựa chọn để xem sản phẩm:
+**Lựa chọn 1: Chạy thành phần mềm Desktop độc lập (Electron mode)**
+```bash
+npm start
+```
+*=> Cửa sổ phần mềm Desktop sẽ tự động hiển thị lên màn hình.*
 
-**Lựa chọn 1: Chạy trên trình duyệt Web (Khuyên dùng)**
+**Lựa chọn 2: Chạy trên trình duyệt Web**
 ```bash
 npm run dev
 ```
 *=> Mở trình duyệt web và truy cập `http://localhost:5173` để sử dụng hệ thống.*
 
-**Lựa chọn 2: Chạy thành phần mềm Desktop độc lập (Electron mode)**
-```bash
-npm start
-```
-*=> Cửa sổ phần mềm Desktop sẽ tự động hiển thị lên màn hình.*
 
 ---
 

@@ -103,6 +103,23 @@ Nếu bạn muốn đóng gói thành file cài đặt để gửi cho khách h�
 
 ---
 
+## 🧪 Hướng dẫn Chạy Kiểm thử (Testing)
+Dự án được thiết lập sẵn môi trường kiểm thử độc lập (Unit Test & Integration Test) và danh sách kịch bản kiểm thử (System Test & UAT) nhằm phục vụ công tác nghiệm thu và báo cáo đồ án.
+
+1. **Xem Kịch bản Kiểm thử (Manual Test)**: 
+   Mở file `testing/Test_Cases_System_UAT.md` để xem danh sách 22 Test Case chi tiết bao phủ toàn bộ chức năng (Đăng nhập, Quản lý thuốc, Cảnh báo tương tác, Kê đơn...). Có thể dùng copy/paste vào báo cáo môn học.
+
+2. **Chạy Kiểm thử Tự động (Automated Test)**:
+   Để chứng minh hệ thống có Unit Test và Integration Test, hãy mở terminal (CMD) mới và làm theo các bước sau:
+   ```bash
+   cd testing
+   npm install
+   npm test
+   ```
+   *=> Hệ thống sẽ dùng thư viện Jest tự động chạy các kịch bản kiểm thử API và Logic. Kết quả in ra màu xanh lá cây (PASS) minh chứng code chạy hoàn hảo.*
+
+---
+
 ## 📚 Tính năng cốt lõi (Key Features)
 1. **Xác thực và Phân quyền:**
    - Hỗ trợ 3 vai trò: Quản trị viên (Admin), Dược sĩ, Bác sĩ.

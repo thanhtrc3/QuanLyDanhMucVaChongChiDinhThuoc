@@ -9,8 +9,8 @@ function isValidAtc(value) {
 }
 
 function getAtcMessage(value) {
-  if (!value) return 'Ma ATC la bat buoc';
-  if (!isValidAtc(value)) return 'Ma ATC phai dung dinh dang vi du J01CA04';
+  if (!value) return 'Mã ATC là bắt buộc';
+  if (!isValidAtc(value)) return 'Mã ATC phải đúng định dạng, ví dụ: J01CA04';
   return null;
 }
 

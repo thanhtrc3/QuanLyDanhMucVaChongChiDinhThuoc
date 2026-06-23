@@ -62,7 +62,7 @@ async function createThuoc(payload) {
   const errors = validateRequiredFields(data);
 
   if (errors.length > 0) {
-    const error = new Error('Du lieu thuoc khong hop le');
+    const error = new Error('Dữ liệu thuốc không hợp lệ');
     error.statusCode = 400;
     error.details = errors;
     throw error;
@@ -76,7 +76,7 @@ async function updateThuoc(thuocID, payload) {
   const errors = validateRequiredFields(data);
 
   if (errors.length > 0) {
-    const error = new Error('Du lieu thuoc khong hop le');
+    const error = new Error('Dữ liệu thuốc không hợp lệ');
     error.statusCode = 400;
     error.details = errors;
     throw error;

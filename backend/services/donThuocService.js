@@ -15,7 +15,9 @@ function normalizeHeader(payload, user) {
     bacSiID: payload.bacSiID || user?.userId || 1, // Fallback nếu user chưa có
     benhNhanID: payload.benhNhanID || payload.benhNhanId || 0,
     chanDoan: payload.chanDoan?.trim() || '',
-    trangThai: payload.trangThai?.trim() || 'Đã cấp'
+    trangThai: payload.trangThai?.trim() || 'Đã cấp',
+    ghiChu: payload.ghiChu?.trim() || '',
+    lyDoGhiDe: payload.lyDoGhiDe?.trim() || ''
   };
 }
 

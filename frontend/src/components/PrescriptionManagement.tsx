@@ -125,6 +125,8 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
     return matchQ && matchStatus;
   });
 
+  const hasSevere = warnings.some(w => ['Tuyet doi', 'Nghiem trong'].includes(w.mucDo));
+
   const resetCreate = () => {
     setStep(1); setSelectedPatient(null); setChanDoan(''); setGhiChu('');
     setDetails([]); setWarnings([]); setOverrideReason(''); setSelectedMedId(''); setSafetyChecked(false);
@@ -135,7 +137,7 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
     const med = medicines.find(m => String(m.id) === String(selectedMedId));
     if (!med) return;
     if (details.find(d => String(d.thuocID) === String(med.id))) { toast.error('Thuốc đã có trong đơn.'); return; }
-    setDetails([...details, { thuocID: med.id, tenThuoc: med.tenThuong, soLuong: 10, lieuMoiLan: 1, soLanDungNgay: 2, cachDung: 'Uống sau ăn' }]);
+    setDetails([...details, { thuocID: med.id, tenThuoc: med.tenThuong, soLuong: 10, lieuMoiLan: 1, soLanDungNgay: 2, ghiChu: 'Uống sau ăn' }]);
     setSelectedMedId('');
     setSafetyChecked(false);
   };
@@ -154,7 +156,6 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
     if (details.length === 0) { toast.error('Đơn thuốc phải có ít nhất 1 loại thuốc.'); return; }
     const shortage = details.find(d => (medicines.find(m => m.id === d.thuocID)?.tonKho ?? 0) < d.soLuong);
     if (shortage) { toast.error(`Tồn kho không đủ cho ${shortage.tenThuoc}.`); return; }
-    const hasSevere = warnings.some(w => ['Tuyet doi', 'Nghiem trong'].includes(w.mucDo));
     if (hasSevere && !overrideReason.trim()) { toast.error('Vui lòng cung cấp lý do ghi đè cảnh báo nghiêm trọng.'); return; }
 
     try {
@@ -162,13 +163,14 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
         bacSiID: currentUser.id,
         benhNhanID: selectedPatient.id,
         chanDoan: chanDoan,
+        ghiChu: ghiChu,
+        lyDoGhiDe: overrideReason,
         trangThai: 'Chờ duyệt',
         chiTiet: details.map(d => ({
           thuocID: d.thuocID,
           soLuong: d.soLuong,
           lieuMoiLan: d.lieuMoiLan,
           soLanDungNgay: d.soLanDungNgay,
-          cachDung: d.cachDung,
           ghiChu: d.ghiChu || ''
         }))
       };
@@ -315,15 +317,21 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
         <div><span class="label">Ngày kê:</span> ${px.ngayKe || ''}</div>
         <div><span class="label">Chẩn đoán:</span> <strong>${px.chanDoan}</strong></div>
         <div><span class="label">Bác sĩ kê đơn:</span> ${px.tenBacSi || ''}</div>
+        ${px.ghiChu ? `<div style="grid-column: 1 / -1;"><span class="label">Ghi chú:</span> <strong>${px.ghiChu}</strong></div>` : ''}
       </div>
       <table>
         <thead><tr><th>STT</th><th>Tên thuốc</th><th>Liều/lần</th><th>Số lần/ngày</th><th>Số lượng</th><th>Cách dùng</th></tr></thead>
         <tbody>${details.map((d: any, i: number) => `
-          <tr><td>${i+1}</td><td>${d.tenThuoc}</td><td>${d.lieuMoiLan}</td><td>${d.soLanDungNgay}</td><td>${d.soLuong}</td><td>${d.cachDung}</td></tr>
+          <tr><td>${i+1}</td><td>${d.tenThuoc}</td><td>${d.lieuMoiLan}</td><td>${d.soLanDungNgay}</td><td>${d.soLuong}</td><td>${d.ghiChu || ''}</td></tr>
         `).join('')}</tbody>
       </table>
       <div class="footer">
-        <div></div>
+        <div>
+          ${px.lyDoGhiDe ? `<div style="margin-top:20px; padding:10px; border:1px solid #ffcc00; background:#fffbea; border-radius:4px; font-size:9pt; width: 60%;">
+            <strong>⚠️ Đơn thuốc có cảnh báo an toàn</strong><br/>
+            <span style="color:#666;">Lý do ghi đè:</span> <em>${px.lyDoGhiDe}</em>
+          </div>` : ''}
+        </div>
         <div class="sig"><p>Ngày ${new Date().getDate()} tháng ${new Date().getMonth()+1} năm ${new Date().getFullYear()}</p><p><strong>Bác sĩ ký tên</strong></p><br/><br/><p>${px.tenBacSi || ''}</p></div>
       </div>
       </body></html>`;
@@ -439,20 +447,20 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
                       <div key={i} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg text-sm">
                         <div>
                           <div className="font-medium text-gray-800">{d.tenThuoc}</div>
-                          <div className="text-xs text-gray-500">{d.lieuMoiLan} {medicines.find(m => m.id === d.thuocID)?.donVi || 'viên'}/lần × {d.soLanDungNgay} lần/ngày · {d.cachDung}</div>
+                          <div className="text-xs text-gray-500">{d.lieuMoiLan} {medicines.find(m => m.id === d.thuocID)?.donVi || 'viên'}/lần × {d.soLanDungNgay} lần/ngày {d.ghiChu ? `· ${d.ghiChu}` : ''}</div>
                         </div>
                         <div className="text-teal-700 font-semibold">{d.soLuong} {medicines.find(m => m.id === d.thuocID)?.donVi || 'viên'}</div>
                       </div>
                     ))}
                   </div>
                 </div>
-                {viewPx.hasWarning && (
-                  <div className={`rounded-xl p-4 text-sm ${viewPx.overrideReason ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'}`}>
+                {viewPx.lyDoGhiDe && (
+                  <div className={`rounded-xl p-4 text-sm bg-amber-50 border border-amber-200`}>
                     <div className="flex items-center gap-2 font-medium mb-1">
-                      <AlertTriangle className={`w-4 h-4 ${viewPx.overrideReason ? 'text-amber-500' : 'text-red-500'}`} />
+                      <AlertTriangle className="w-4 h-4 text-amber-500" />
                       <span>Đơn thuốc có cảnh báo an toàn</span>
                     </div>
-                    {viewPx.overrideReason && <p className="text-gray-600 text-xs">Lý do ghi đè: <em>{viewPx.overrideReason}</em></p>}
+                    <p className="text-gray-600 text-xs">Lý do ghi đè: <em>{viewPx.lyDoGhiDe}</em></p>
                   </div>
                 )}
                 <div className="flex items-center justify-between">
@@ -557,7 +565,7 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
                         </div>
                         <div>
                           <label className="block text-gray-500 mb-1">Cách dùng</label>
-                          <input value={d.cachDung} onChange={e => setDetails(details.map((x, j) => j === i ? { ...x, cachDung: e.target.value } : x))} className="w-full border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500" />
+                          <input type="text" value={d.ghiChu || ''} onChange={e => setDetails(details.map((x, j) => j === i ? { ...x, ghiChu: e.target.value } : x))} placeholder="Sáng, tối..." className="w-full border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500" />
                         </div>
                       </div>
                     </div>
@@ -634,7 +642,7 @@ export function PrescriptionManagement({ prescriptions, setPrescriptions, medici
                   <div className="border-t border-gray-200 pt-2 space-y-1">
                     {details.map((d, i) => (
                       <div key={i} className="flex justify-between text-xs">
-                        <span className="text-gray-700">{d.tenThuoc} — {d.lieuMoiLan} viên × {d.soLanDungNgay}/ngày</span>
+                        <span className="text-gray-700">{d.tenThuoc} — {d.lieuMoiLan} viên × {d.soLanDungNgay}/ngày {d.ghiChu ? `· ${d.ghiChu}` : ''}</span>
                         <span className="font-medium">{d.soLuong} viên</span>
                       </div>
                     ))}

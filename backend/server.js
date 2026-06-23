@@ -16,6 +16,11 @@ const donThuocRoutes = require('./routes/donThuoc');
 const nguoiDungRoutes = require('./routes/nguoiDung');
 const chongChiDinhRoutes = require('./routes/chongChiDinh');
 const auditLogRoutes = require('./routes/auditLog');
+const accountRequestRoutes = require('./routes/accountRequest');
+const settingsRoutes = require('./routes/settings');
+const dashboardRoutes = require('./routes/dashboard');
+const benhNhanRoutes = require('./routes/benhNhan');
+const tuongTacThuocRoutes = require('./routes/tuongTacThuoc');
 
 dotenv.config();
 
@@ -34,6 +39,11 @@ app.use('/api/nguoidung', nguoiDungRoutes);
 app.use('/api/chongchidinh', chongChiDinhRoutes);
 app.use('/api/chong-chi-dinh', chongChiDinhRoutes);
 app.use('/api/audit-log', auditLogRoutes);
+app.use('/api/account-requests', accountRequestRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/benh-nhan', benhNhanRoutes);
+app.use('/api/tuong-tac-thuoc', tuongTacThuocRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({

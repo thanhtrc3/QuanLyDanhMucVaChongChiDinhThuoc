@@ -10,16 +10,17 @@ function toInt(value, fallback = 0) {
 function normalizeThuocPayload(payload) {
   return {
     maATC: normalizeAtc(payload.maATC),
-    tenThuongMai: payload.tenThuongMai ? payload.tenThuongMai.trim() : null,
+    tenThuong: payload.tenThuong ? payload.tenThuong.trim() : null,
     hoatChat: payload.hoatChat ? payload.hoatChat.trim() : null,
-    hamLuong: payload.hamLuong || null,
-    phanLoai: payload.phanLoai ? payload.phanLoai.trim() : 'Khác',
-    nhomThuocID: payload.nhomThuocID ? toInt(payload.nhomThuocID, null) : null,
-    donViTinh: payload.donViTinh ? payload.donViTinh.trim() : null,
-    tonKhoHienTai: toInt(payload.tonKhoHienTai),
-    tonToiThieu: toInt(payload.tonToiThieu),
-    ngaySanXuat: payload.ngaySanXuat || null,
-    ngayHetHan: payload.ngayHetHan || null
+    nhomThuoc: payload.nhomThuoc ? payload.nhomThuoc.trim() : 'Khác',
+    doiTuong: payload.doiTuong ? payload.doiTuong.trim() : 'Tất cả',
+    donVi: payload.donVi ? payload.donVi.trim() : null,
+    giaBan: payload.giaBan ? parseFloat(payload.giaBan) : 0,
+    tonKho: toInt(payload.tonKho),
+    tonKhoToiThieu: toInt(payload.tonKhoToiThieu),
+    hanDung: payload.hanDung || null,
+    moTa: payload.moTa || '',
+    trangThai: payload.trangThai !== false
   };
 }
 
@@ -28,12 +29,12 @@ function validateRequiredFields(data) {
 
   const atcMessage = getAtcMessage(data.maATC);
   if (atcMessage) errors.push(atcMessage);
-  if (!data.tenThuongMai) errors.push('Ten thuoc la bat buoc');
-  if (!data.hoatChat) errors.push('Hoat chat la bat buoc');
-  if (!data.donViTinh) errors.push('Don vi tinh la bat buoc');
-  if (data.phanLoai && !isValidCategory(data.phanLoai)) errors.push('Phan loai thuoc khong hop le');
-  if (data.donViTinh && !isValidUnit(data.donViTinh)) errors.push('Don vi tinh khong hop le');
-  if (data.tonKhoHienTai < 0 || data.tonToiThieu < 0) errors.push('Ton kho khong duoc am');
+  if (!data.tenThuong) errors.push('Tên thuốc là bắt buộc');
+  if (!data.hoatChat) errors.push('Hoạt chất là bắt buộc');
+  if (!data.donVi) errors.push('Đơn vị tính là bắt buộc');
+  if (data.donVi && !isValidUnit(data.donVi)) errors.push('Đơn vị tính không hợp lệ');
+  if (data.tonKho < 0 || data.tonKhoToiThieu < 0) errors.push('Tồn kho không được âm');
+  if (data.giaBan < 0) errors.push('Giá bán không được âm');
 
   return errors;
 }

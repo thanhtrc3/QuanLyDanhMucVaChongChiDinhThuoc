@@ -42,7 +42,7 @@ function isValidCategory(value) {
 }
 
 function isValidUnit(value) {
-  return MEDICINE_UNITS.includes(value);
+  return value ? MEDICINE_UNITS.includes(value.toLowerCase()) : false;
 }
 
 module.exports = {

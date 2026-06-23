@@ -1,74 +1,87 @@
 const express = require('express');
 const router = express.Router();
 const { poolPromise, sql } = require('../db');
-const { verifyToken, checkRole } = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
 
-// Lấy danh sách quy tắc chống chỉ định
+// Lấy danh sách chống chỉ định
 router.get('/', verifyToken, async (req, res) => {
-  try {
-    const pool = await poolPromise;
-    const result = await pool.request().query(`
-      SELECT ccd.id, t.tenThuongMai, ccd.loaiBenh, ccd.mucDoCanhBao, ccd.moTa 
-      FROM ChongChiDinh ccd
-      JOIN Thuoc t ON ccd.thuocID = t.thuocID
-    `);
-    res.json(result.recordset);
-  } catch (error) {
-    // Nếu bảng chưa tồn tại thì trả về rỗng
-    res.json([]); 
-  }
-});
-
-// Thêm mới quy tắc CCĐ (Chỉ Admin hoặc Bác sĩ được thêm)
-router.post('/', verifyToken, checkRole(['Admin', 'BacSi']), async (req, res) => {
-    const { thuocID, loaiBenh, mucDoCanhBao, moTa } = req.body;
     try {
         const pool = await poolPromise;
-        
-        // 1. Đảm bảo bảng đã tồn tại (Giữ nguyên logic cũ)
-        await pool.request().query(`
-            IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ChongChiDinh' and xtype='U')
-            CREATE TABLE ChongChiDinh (
-                id INT IDENTITY(1,1) PRIMARY KEY,
-                thuocID INT,
-                loaiBenh NVARCHAR(150),
-                mucDoCanhBao VARCHAR(20),
-                moTa NVARCHAR(500)
-            );
+        const result = await pool.request().query(`
+            SELECT c.ruleID AS id, c.thuocID, t.tenThuongMai AS tenThuoc, t.maATC, c.dieuKien, c.mucDo AS mucDoNguyHiem, c.heuQua, c.moTa
+            FROM ChongChiDinh c
+            JOIN Thuoc t ON c.thuocID = t.thuocID
         `);
+        res.json(result.recordset);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi khi lấy danh sách chống chỉ định' });
+    }
+});
 
-        // 2. TÍCH HỢP QCD-62: Logic chặn nhập trùng Rule
-        const checkDuplicate = await pool.request()
+// Thêm chống chỉ định mới
+router.post('/', verifyToken, async (req, res) => {
+    try {
+        const { thuocID, dieuKien, mucDoNguyHiem, heuQua, moTa } = req.body;
+        const pool = await poolPromise;
+        
+        const result = await pool.request()
             .input('thuocID', sql.Int, thuocID)
-            .input('loaiBenh', sql.NVarChar(150), loaiBenh)
+            .input('dieuKien', sql.NVarChar, dieuKien)
+            .input('mucDo', sql.NVarChar, mucDoNguyHiem)
+            .input('heuQua', sql.NVarChar, heuQua)
+            .input('moTa', sql.NVarChar, moTa)
             .query(`
-                SELECT COUNT(*) as count 
-                FROM ChongChiDinh 
-                WHERE thuocID = @thuocID AND loaiBenh = @loaiBenh
+                INSERT INTO ChongChiDinh (thuocID, dieuKien, mucDo, heuQua, moTa)
+                OUTPUT INSERTED.ruleID AS id
+                VALUES (@thuocID, @dieuKien, @mucDo, @heuQua, @moTa)
             `);
+            
+        res.status(201).json({ message: 'Thêm thành công', data: result.recordset[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi khi thêm chống chỉ định' });
+    }
+});
 
-        if (checkDuplicate.recordset[0].count > 0) {
-            // Chặn ngay lập tức nếu phát hiện mâu thuẫn/trùng lặp
-            return res.status(400).json({ 
-                message: 'Lỗi: Quy tắc chống chỉ định cho bệnh này đã tồn tại trên thuốc này! Vui lòng kiểm tra lại.' 
-            });
-        }
-
-        // 3. TÍCH HỢP QCD-63: Insert data bao gồm cả Mức độ cảnh báo (Đỏ/Vàng)
+// Cập nhật chống chỉ định
+router.put('/:id', verifyToken, async (req, res) => {
+    try {
+        const { thuocID, dieuKien, mucDoNguyHiem, heuQua, moTa } = req.body;
+        const pool = await poolPromise;
+        
         await pool.request()
+            .input('id', sql.Int, req.params.id)
             .input('thuocID', sql.Int, thuocID)
-            .input('loaiBenh', sql.NVarChar(150), loaiBenh)
-            .input('mucDoCanhBao', sql.VarChar(20), mucDoCanhBao) 
-            .input('moTa', sql.NVarChar(500), moTa)
+            .input('dieuKien', sql.NVarChar, dieuKien)
+            .input('mucDo', sql.NVarChar, mucDoNguyHiem)
+            .input('heuQua', sql.NVarChar, heuQua)
+            .input('moTa', sql.NVarChar, moTa)
             .query(`
-                INSERT INTO ChongChiDinh (thuocID, loaiBenh, mucDoCanhBao, moTa)
-                VALUES (@thuocID, @loaiBenh, @mucDoCanhBao, @moTa)
+                UPDATE ChongChiDinh 
+                SET thuocID = @thuocID, dieuKien = @dieuKien, mucDo = @mucDo, heuQua = @heuQua, moTa = @moTa
+                WHERE ruleID = @id
             `);
+            
+        res.json({ message: 'Cập nhật thành công' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi khi cập nhật chống chỉ định' });
+    }
+});
 
-        res.status(201).json({ message: 'Thêm Chống chỉ định thành công' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Lỗi server' });
+// Xóa chống chỉ định
+router.delete('/:id', verifyToken, async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        await pool.request()
+            .input('id', sql.Int, req.params.id)
+            .query('DELETE FROM ChongChiDinh WHERE ruleID = @id');
+            
+        res.json({ message: 'Xóa thành công' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Lỗi khi xóa chống chỉ định' });
     }
 });
 

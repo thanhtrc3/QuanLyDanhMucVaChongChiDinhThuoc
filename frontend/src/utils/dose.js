@@ -25,6 +25,5 @@ export function calculateLineDose(line) {
     mucDoCanhBao: vuotLieu ? mucDoCanhBao : null,
     isTuyetDoi: vuotLieu && mucDoCanhBao === 'TUYET_DOI',
     isThanTrong: vuotLieu && mucDoCanhBao === 'THAN_TRONG'
-    vuotLieu: maxLieuNgay > 0 && tongLieuNgay > maxLieuNgay
   };
 }

@@ -1,0 +1,92 @@
+
+====== PAGE 1 ======
+
+Issue Type 	Summary 	Assignee 	Summary 	Description 	Priority 	Components
+Epic 	Thiết lập dự án & CI/CD 	Nguyễn Thanh Hiến 	Thiết lập repository cơ sở dữ liệu và framework cho ứng dụng desktop	High 	Project Setup
+Story 	Khởi tạo Base Project 	Nguyễn Thanh Hiến 	Thiết lập dự án & CI/CD 	Cài đặt mã nguồn cơ sở cấu hình thư mục và kết nối Database	High 	Project Setup
+Task 	Setup Github repo & rules 	Nguyễn Thanh Hiến 	Khởi tạo Base Project 	Khởi tạo nhánh develop feature và rule pull request High 	Project Setup
+Task 	Setup Jira board 	Nguyễn Thanh Hiến 	Khởi tạo Base Project 	Cấu hình Workflow Epic Story Task trên Jira 	High 	Project Setup
+Task 	Setup base source code 	Nguyễn Thanh Hiến 	Khởi tạo Base Project 	Tạo base project Desktop App kết nối MySQL 	High 	Project Setup
+Subtask 	Đóng gói phần mềm Desktop 	Nguyễn Thanh Hiến 	Khởi tạo Base Project 	Tạo bộ cài đặt Installer hoàn thiện nộp báo cáo 	Medium 	Project Setup
+Epic 	Phân tích & Thiết kế hệ thống 	Trần Mộng Bình 	Thiết kế UML cơ sở dữ liệu và giao diện Figma toàn hệ thống	High 	Design
+Story 	Thiết kế Database & UML 	Trần Mộng Bình 	Phân tích & Thiết kế hệ thống 	Chuyển đổi sơ đồ Class Diagram thành SQL script và thiết kế DB vật lý	High 	Design
+Task 	Vẽ Class Diagram & Use Case 	Trần Mộng Bình 	Thiết kế Database & UML 	Vẽ các sơ đồ luồng nghiệp vụ trên công cụ UML 	Medium 	Design
+Task 	Tạo script SQL Create Database 	Trần Mộng Bình 	Thiết kế Database & UML 	Viết file .sql để gen bảng NguoiDung Thuoc ChongChiDinh	Highest 	Design
+Story 	Thiết kế Giao diện Figma 	Nguyễn Trường Duy 	Phân tích & Thiết kế hệ thống 	Hoàn thiện các bản vẽ UI/UX trên Figma cho toàn bộ chức năng	High 	Design
+Task 	Design màn hình Đăng nhập & Dashboard 	Nguyễn Trường Duy 	Thiết kế Giao diện Figma 	Lên thiết kế UI/UX trên Figma 	High 	Design
+Task 	Design màn hình Danh mục & Đơn thuốc 	Nguyễn Trường Duy 	Thiết kế Giao diện Figma 	Thiết kế màn quản lý dữ liệu chính trên Figma 	High 	Design
+Epic 	Quản trị Hệ thống & Bảo mật 	Trần Mộng Bình 	Quản lý tài khoản đăng nhập phân quyền và nhật ký hoạt động (Audit Log)	Highest 	System & Security
+Story 	Đăng nhập hệ thống 	Trần Mộng Bình 	Quản trị Hệ thống & Bảo mật 	Chức năng xác thực người dùng và mã hóa mật khẩuHighest 	System & Security
+Task 	UI Form Login 	Trần Mộng Bình 	Đăng nhập hệ thống 	Code giao diện màn hình Đăng nhập 	High 	System & Security
+Task 	Xử lý hash mật khẩu và Auth 	Trần Mộng Bình 	Đăng nhập hệ thống 	Logic xác thực so sánh mật khẩu SHA/Bcrypt 	Highest 	System & Security
+Task 	Unit test Login 	Trần Mộng Bình 	Đăng nhập hệ thống 	Viết các case test cho phân hệ đăng nhập 	Medium 	System & Security
+Story 	Phân quyền & Audit Log 	Trần Mộng Bình 	Quản trị Hệ thống & Bảo mật 	Lưu vết thao tác và cấp quyền theo vai trò 	High 	System & Security
+Task 	Tạo DB Triggers cho Audit Log 	Trần Mộng Bình 	Phân quyền & Audit Log 	Ngăn chặn Update/Delete trên bảng Log bằng TriggerHighest 	System & Security
+Task 	Code chức năng phân quyền UI 	Trần Mộng Bình 	Phân quyền & Audit Log 	Ẩn/Hiện nút Thêm Sửa Xóa theo Role 	High 	System & Security
+Task 	Chức năng Export Audit Log 	Nguyễn Thành Đạt 	Phân quyền & Audit Log 	Kết xuất lịch sử thao tác ra file theo điều kiện lọc 	Medium 	System & Security
+Epic 	Quản lý Danh mục Thuốc 	Nguyễn Trường Duy 	Các tính năng CRUD danh mục thuốc và chuẩn hóa mã ATC	High 	Medicine Management
+Story 	CRUD Danh mục thuốc 	Nguyễn Trường Duy 	Quản lý Danh mục Thuốc 	Thêm sửa khóa trạng thái thông tin thuốc theo mã ATC	High 	Medicine Management
+Task 	UI Thêm/Sửa/Xóa thuốc 	Nguyễn Trường Duy 	CRUD Danh mục thuốc 	Code giao diện Form nhập liệu thuốc 	High 	Medicine Management
+Task 	API/DAL xử lý thuốc 	Nguyễn Trường Duy 	CRUD Danh mục thuốc 	Viết các hàm Repository tương tác DB bảng Thuoc High 	Medicine Management
+Task 	Validation mã ATC 	Nguyễn Trường Duy 	CRUD Danh mục thuốc 	Kiểm tra tính duy nhất của mã ATC khi thêm mới 	Highest 	Medicine Management
+Story 	Phân loại & Đơn vị tính 	Nguyễn Trường Duy 	Quản lý Danh mục Thuốc 	Nhóm thuốc theo danh mục và quy đổi đơn vị 	Medium 	Medicine Management
+Task 	Quản lý danh mục nhóm thuốc 	Nguyễn Trường Duy 	Phân loại & Đơn vị tính 	Hiển thị list nhóm thuốc và lọc dữ liệu 	Medium 	Medicine Management
+
+====== PAGE 2 ======
+
+Issue Type 	Summary 	Assignee 	Summary 	Description 	Priority 	Components
+Task 	Convert đơn vị tính 	Nguyễn Trường Duy 	Phân loại & Đơn vị tính 	Xử lý logic quy đổi viên/vỉ/hộp 	Low 	Medicine Management
+Epic 	Quản lý Kho thuốc 	Nguyễn Thanh Hiến 	Kiểm soát tồn kho tự động cảnh báo hạn sử dụng và thuốc sắp hết	Medium 	Inventory
+Story 	Cảnh báo hết hạn 	Nguyễn Thanh Hiến 	Quản lý Kho thuốc 	Tự động vô hiệu hóa thuốc khi hết hạn sử dụng 	High 	Inventory
+Task 	Background job check hạn sử dụng 	Nguyễn Thanh Hiến 	Cảnh báo hết hạn 	Task chạy ngầm kiểm tra ngày hết hạn so với hiện tạiHighest 	Inventory
+Task 	UI bôi xám thuốc hết hạn 	Nguyễn Thanh Hiến 	Cảnh báo hết hạn 	Cập nhật giao diện DataGrid vô hiệu hóa dòng thuốc hết hạn	High 	Inventory
+Story 	Cảnh báo tồn kho 	Nguyễn Thanh Hiến 	Quản lý Kho thuốc 	Hiển thị thông báo khi lượng thuốc dưới mức tối thiểuMedium 	Inventory
+Task 	Logic tính toán tồn tối thiểu 	Nguyễn Thanh Hiến 	Cảnh báo tồn kho 	Viết hàm cảnh báo tồn hiện tại < tồn tối thiểu 	High 	Inventory
+Task 	Hiển thị Alert Dashboard 	Nguyễn Thanh Hiến 	Cảnh báo tồn kho 	Bind dữ liệu list thuốc sắp hết lên Dashboard 	Medium 	Inventory
+Epic 	Quản lý Bệnh nhân 	Trần Mộng Bình 	Lưu trữ hồ sơ bệnh nhân hỗ trợ kiểm tra thông tin độ tuổi và tiền sử bệnh	High 	Patient Management
+Story 	Nhập thông tin bệnh nhân 	Trần Mộng Bình 	Quản lý Bệnh nhân 	Lưu và validate thông tin cá nhân tiền sử bệnh lý 	High 	Patient Management
+Task 	UI form Bệnh nhân 	Trần Mộng Bình 	Nhập thông tin bệnh nhân 	Code giao diện nhập hồ sơ người bệnh 	High 	Patient Management
+Task 	Validate ngày sinh & tiền sử 	Trần Mộng Bình 	Nhập thông tin bệnh nhân 	Ràng buộc thông tin nhập liệu (tính chính xác tuổi) High 	Patient Management
+Task 	API CRUD bệnh nhân 	Trần Mộng Bình 	Nhập thông tin bệnh nhân 	Thực hiện lưu dữ liệu vào bảng BenhNhan 	Medium 	Patient Management
+Story 	Lịch sử khám bệnh 	Trần Mộng Bình 	Quản lý Bệnh nhân 	Tra cứu lại các toa thuốc đã từng kê cho bệnh nhânMedium 	Patient Management
+Task 	Truy vấn lịch sử toa thuốc 	Trần Mộng Bình 	Lịch sử khám bệnh 	Join bảng DonThuoc và BenhNhan để lấy lịch sử 	Medium 	Patient Management
+Task 	UI hiển thị lịch sử 	Trần Mộng Bình 	Lịch sử khám bệnh 	Giao diện danh sách các lần khám trước 	Low 	Patient Management
+Epic 	Quản lý Đơn thuốc 	Nguyễn Trường Duy 	Hỗ trợ bác sĩ lập toa thuốc tính tổng liều tự động 	Highest 	Prescription
+Story 	Lập toa thuốc mới 	Nguyễn Trường Duy 	Quản lý Đơn thuốc 	Giao diện kê đơn và tìm kiếm thuốc nhanh chóng 	Highest 	Prescription
+Task 	UI màn hình kê đơn 	Nguyễn Trường Duy 	Lập toa thuốc mới 	Code giao diện Master-Detail cho toa thuốc 	Highest 	Prescription
+Task 	Chức năng tìm kiếm thuốc nhanh 	Nguyễn Trường Duy 	Lập toa thuốc mới 	Autocomplete textbox cho mã ATC và Tên thuốc 	High 	Prescription
+Task 	Lưu chi tiết đơn thuốc vào DB 	Nguyễn Trường Duy 	Lập toa thuốc mới 	Insert multi-rows vào bảng ChiTietDonThuoc an toànHighest 	Prescription
+Subtask 	Test case & manual test luồng kê đơn 	Nguyễn Trường Duy 	Lập toa thuốc mới 	Thực hiện kịch bản test trên UI chức năng tạo đơn High 	Prescription
+Story 	Tính tổng liều tự động 	Nguyễn Trường Duy 	Quản lý Đơn thuốc 	Tự động tính toán tổng liều theo ngày và so sánh giới hạn	High 	Prescription
+Task 	Logic tính toán lieu x solan 	Nguyễn Trường Duy 	Tính tổng liều tự động 	Cập nhật Generated Column trên UI tự động 	High 	Prescription
+Task 	Popup cảnh báo vượt liều 	Nguyễn Trường Duy 	Tính tổng liều tự động 	Hiện alert nếu tổng liều tính được > định mức 	High 	Prescription
+Epic 	Quản lý Chống chỉ định (CCĐ) 	Nguyễn Thành Đạt 	Thiết lập các quy tắc CCĐ giữa thuốc và đối tượng bệnh nhân	Highest 	Contraindications
+Story 	Thiết lập quy tắc CCĐ 	Nguyễn Thành Đạt 	Quản lý Chống chỉ định (CCĐ) 	Giao diện tạo rule CCĐ kết hợp độ tuổi và bệnh lý 	Highest 	Contraindications
+Task 	UI thiết lập Rule CCĐ 	Nguyễn Thành Đạt 	Thiết lập quy tắc CCĐ 	Form nhập biểu thức Logic đối tượng 	High 	Contraindications
+Task 	Parser biểu thức logic tuổi/cân nặng 	Nguyễn Thành Đạt 	Thiết lập quy tắc CCĐ 	Dịch toán tử (< > =) thành code kiểm tra 	Highest 	Contraindications
+
+====== PAGE 3 ======
+
+Issue Type 	Summary 	Assignee 	Summary 	Description 	Priority 	Components
+Story 	Mapping Thuốc & Đối tượng 	Nguyễn Thành Đạt 	Quản lý Chống chỉ định (CCĐ) 	Liên kết các loại thuốc với rule CCĐ vừa tạo 	High 	Contraindications
+Task 	Logic chặn nhập trùng Rule 	Nguyễn Thành Đạt 	Mapping Thuốc & Đối tượng 	Tránh lưu 2 rule CCĐ mâu thuẫn trên 1 thuốc 	High 	Contraindications
+Task 	Lưu cấu hình cảnh báo mức độ 	Nguyễn Thành Đạt 	Mapping Thuốc & Đối tượng 	Cập nhật trạng thái Tuyệt đối/Thận trọng vào bảng Medium 	Contraindications
+Epic 	Kiểm tra Cảnh báo Tương tác 	Nguyễn Thành Đạt 	Core rule engine quét tương tác tổ hợp thuốc và cảnh báo rủi ro	Highest 	Alerting Engine
+Story 	Quét CCĐ độ tuổi/bệnh lý 	Nguyễn Thành Đạt 	Kiểm tra Cảnh báo Tương tác 	Rà soát tự động trước khi kê đơn theo bệnh án cá nhân	Highest 	Alerting Engine
+Task 	Tự động so khớp thông tin BN 	Nguyễn Thành Đạt 	Quét CCĐ độ tuổi/bệnh lý 	Hàm check tuổi và thuộc tính MangThai với Rule CCĐHighest 	Alerting Engine
+Task 	Cảnh báo modal thuốc CCĐ 	Nguyễn Thành Đạt 	Quét CCĐ độ tuổi/bệnh lý 	Bật UI cảnh báo đỏ khi rủi ro Tuyệt đối 	Highest 	Alerting Engine
+Story 	Quét tương tác tổ hợp 	Nguyễn Thành Đạt 	Kiểm tra Cảnh báo Tương tác 	Chạy thuật toán đối chiếu đa chéo các thuốc trong toa	Highest 	Alerting Engine
+Task 	Thuật toán quét n(n-1)/2 	Nguyễn Thành Đạt 	Quét tương tác tổ hợp 	Viết thuật toán sinh tổ hợp cặp thuốc trong toa 	Highest 	Alerting Engine
+Task 	Tối ưu hiệu năng truy vấn tổ hợp 	Nguyễn Thành Đạt 	Quét tương tác tổ hợp 	Sử dụng caching hoặc index để check tương tác siêu tốc	High 	Alerting Engine
+Subtask 	Test case & manual test quét CCĐ 	Nguyễn Thành Đạt 	Quét tương tác tổ hợp 	Chèn dữ liệu giả để trigger kiểm thử tương tác thuốcHighest 	Alerting Engine
+Story 	Override cảnh báo 	Nguyễn Thành Đạt 	Kiểm tra Cảnh báo Tương tác 	Cơ chế bỏ qua cảnh báo (mức độ Thận trọng) đi kèm lý do bắt buộc	High 	Alerting Engine
+Task 	UI nhập lý do Override 	Nguyễn Thành Đạt 	Override cảnh báo 	Form require lý do > 10 ký tự 	High 	Alerting Engine
+Task 	Lưu lý do vào Audit Log 	Nguyễn Thành Đạt 	Override cảnh báo 	Log hành vi người dùng kèm chi tiết toa thuốc 	Highest 	Alerting Engine
+Task 	Disable nút lưu nếu rủi ro Tuyệt đối 	Nguyễn Thành Đạt 	Override cảnh báo 	Xử lý UI trạng thái nút Save dựa theo cờ báo lỗi 	High 	Alerting Engine
+Epic 	Báo cáo & Thống kê 	Nguyễn Thanh Hiến 	Xuất báo cáo tồn kho báo cáo cảnh báo và biểu đồ thống kê	Low 	Reporting
+Story 	Báo cáo tồn kho & CCĐ 	Nguyễn Thanh Hiến 	Báo cáo & Thống kê 	Thống kê danh mục và các rủi ro đã phát hiện 	Medium 	Reporting
+Task 	SQL Query thống kê 	Nguyễn Thanh Hiến 	Báo cáo tồn kho & CCĐ 	Viết procedure tổng hợp rủi ro tương tác theo thángMedium 	Reporting
+Task 	Vẽ biểu đồ Pie/Bar chart 	Nguyễn Thanh Hiến 	Báo cáo tồn kho & CCĐ 	Tích hợp thư viện vẽ biểu đồ lên view Báo Cáo 	Low 	Reporting
+Story 	Xuất file báo cáo 	Nguyễn Thanh Hiến 	Báo cáo & Thống kê 	Kết xuất dữ liệu hệ thống ra PDF/Excel 	Low 	Reporting
+Task 	Export PDF toa thuốc 	Nguyễn Thanh Hiến 	Xuất file báo cáo 	Format template HTML/PDF cho đơn thuốc chuẩn Medium 	Reporting
+Task 	Export Excel danh mục thuốc 	Nguyễn Thanh Hiến 	Xuất file báo cáo 	Chức năng trích xuất gridview ra xlsx 	Low 	Reporting

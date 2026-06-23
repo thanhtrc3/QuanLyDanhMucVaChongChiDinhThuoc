@@ -12,19 +12,16 @@ function createPrescriptionCode() {
 
 function normalizeHeader(payload, user) {
   return {
-    maDonThuoc: payload.maDonThuoc?.trim() || createPrescriptionCode(),
-    tenBenhNhan: payload.tenBenhNhan?.trim() || '',
-    ngayKeDon: payload.ngayKeDon || new Date().toISOString().slice(0, 10),
-    ghiChu: payload.ghiChu?.trim() || null,
-    createdBy: user?.displayName || user?.email || user?.role || null
+    bacSiID: payload.bacSiID || user?.userId || 1, // Fallback nếu user chưa có
+    benhNhanID: payload.benhNhanID || payload.benhNhanId || 0,
+    chanDoan: payload.chanDoan?.trim() || '',
+    trangThai: payload.trangThai?.trim() || 'Đã cấp'
   };
 }
 
 function validateHeader(data) {
   const errors = [];
-  if (!data.tenBenhNhan) errors.push('Ten benh nhan la bat buoc');
-  if (data.tenBenhNhan.length > 150) errors.push('Ten benh nhan khong duoc vuot qua 150 ky tu');
-  if (!/^DT-[A-Z0-9-]+$/.test(data.maDonThuoc)) errors.push('Ma don thuoc khong hop le');
+  if (!data.benhNhanID) errors.push('Bệnh nhân là bắt buộc (benhNhanID)');
   return errors;
 }
 
@@ -37,13 +34,12 @@ function throwValidationError(errors) {
 
 function normalizeDetail(item) {
   return {
-    thuocID: Number.parseInt(item.thuocID, 10),
-    lieuMoiLan: Number(item.lieuMoiLan),
-    soLanNgay: Number.parseInt(item.soLanNgay, 10),
-    soNgay: Number.parseInt(item.soNgay, 10),
-    soLuong: Number.parseInt(item.soLuong, 10),
-    huongDan: item.huongDan?.trim() || null,
-    maxLieuNgay: item.maxLieuNgay === '' || item.maxLieuNgay == null ? null : Number(item.maxLieuNgay)
+    thuocID: Number.parseInt(item.thuocID || item.id, 10),
+    soLuong: Number.parseInt(item.soLuong, 10) || 1,
+    lieuMoiLan: item.lieuMoiLan || 1,
+    soLanDungNgay: item.soLanDungNgay || 1,
+    cachDung: item.cachDung?.trim() || '',
+    ghiChu: item.ghiChu?.trim() || ''
   };
 }
 
@@ -55,9 +51,7 @@ function validateDetails(items) {
   items.forEach((item, index) => {
     const label = `Dong ${index + 1}`;
     if (!Number.isInteger(item.thuocID) || item.thuocID <= 0) errors.push(`${label}: thuoc khong hop le`);
-    if (!Number.isFinite(item.lieuMoiLan) || item.lieuMoiLan <= 0) errors.push(`${label}: lieu moi lan phai lon hon 0`);
-    if (!Number.isInteger(item.soLanNgay) || item.soLanNgay <= 0) errors.push(`${label}: so lan ngay phai lon hon 0`);
-    if (!Number.isInteger(item.soNgay) || item.soNgay <= 0) errors.push(`${label}: so ngay phai lon hon 0`);
+    if (item.soLuong <= 0) errors.push(`${label}: so luong phai lon hon 0`);
     if (!Number.isInteger(item.soLuong) || item.soLuong <= 0) errors.push(`${label}: so luong phai lon hon 0`);
     if (medicineIDs.has(item.thuocID)) errors.push(`${label}: thuoc bi trung trong don`);
     medicineIDs.add(item.thuocID);
@@ -118,12 +112,33 @@ function checkDose(payload) {
   });
 }
 
+async function updateStatus(id, trangThaiStr) {
+  const trangThaiMap = {
+    'Da cap': 'Đã cấp',
+    'Cho duyet': 'Chờ duyệt',
+    'Huy': 'Hủy'
+  };
+  const mappedStatus = trangThaiMap[trangThaiStr] || trangThaiStr;
+  
+  if (mappedStatus === 'Hủy') {
+    return donThuocRepository.cancelDonThuoc(id);
+  }
+  
+  return donThuocRepository.updateStatus(id, mappedStatus);
+}
+
+async function deleteDonThuoc(id) {
+  return donThuocRepository.deleteDonThuoc(id);
+}
+
 module.exports = {
   listDonThuoc,
   getDonThuoc,
   createDraft,
   createPrescription,
   checkDose,
+  updateStatus,
+  deleteDonThuoc,
   normalizeHeader,
   validateHeader,
   throwValidationError

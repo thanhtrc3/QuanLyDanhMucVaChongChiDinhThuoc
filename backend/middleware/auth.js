@@ -10,7 +10,7 @@ function verifyToken(req, res, next) {
   }
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret');
+    req.user = jwt.verify(token, process.env.JWT_SECRET || 'NHOM9_SECRET_KEY');
     return next();
   } catch (error) {
     return res.status(401).json({ message: 'Token khong hop le hoac da het han' });

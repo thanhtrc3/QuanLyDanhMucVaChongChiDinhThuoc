@@ -58,7 +58,7 @@ Mở thêm một cửa sổ dòng lệnh (Terminal/CMD) **mới** (vẫn giữ n
 ```bash
 cd frontend
 cmd
-npm install
+npm install --legacy-peer-deps
 ```
 
 Sau khi cài đặt xong thư viện, có 2 lựa chọn để xem sản phẩm:
